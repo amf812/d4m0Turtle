@@ -16,9 +16,13 @@ I think, at this point, that I'm going to steal and modify as much of the naviga
 
 ### d4m0_routines
 
+**NOTE**: This should be moved to the wiki
+
 Holds all of my particular different libraries for usage from within **d4m0Turtle.py**.  First on the agenda will be working with seeking out ore and navigation to it, so _seek-n-nav_ will probably be my first real work here, fueled by data compiled by the _analytics_ routines to determine closest location & quantity of resources.
 
 #### analytics
+
+  * locate_significant_halite: locates at least 3 halite resources, with at least one being a maximal ore deposit
 
 #### seek-n-nav
 

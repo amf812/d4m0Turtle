@@ -39,6 +39,22 @@ while True:
     command_queue = []
 
     for ship in me.get_ships():
+        #d4m0 schitt starts
+
+        #decide whether or not to mine with this ship
+        #is it full?
+        if ship.is_full:	#we'll test this for being close to full, also
+            #locate closest base & deposit (for now we'll do this w/initial
+            #base only)
+            #locate_nearest_base() in analytics will handle this eventually
+            command_queue.append(
+                naive_navigate(ship, locate_nearest_base(ship, game_map)))
+            #NOTE: docking analogous routine is ship.make_dropoff()
+
+        
+
+
+        #d4m0 schitt ends
         # For each of your ships, move randomly if the ship is on a low halite location or the ship is full.
         #   Else, collect halite.
         if game_map[ship.position].halite_amount < constants.MAX_HALITE / 10 or ship.is_full:
