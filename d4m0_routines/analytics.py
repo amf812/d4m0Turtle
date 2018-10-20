@@ -3,12 +3,13 @@ analytics.py
 
 """
 
-from hlt import constants, game_map
+#from hlt import constants, game_map
 from hlt.positionals import Direction, Position
+from . import myglobals
 
-#constant schitt
-Worth_Mining_Halite = constants.MAX_HALITE - (constants.MAX_HALITE * 0.2)
-Maximal_Consideration_Distance = game_map.width / 2
+#constant schitt should now be in myglobals
+#Worth_Mining_Halite = constants.MAX_HALITE - (constants.MAX_HALITE * 0.2)
+#Maximal_Consideration_Distance = game_map.width / 2
 
 def locate_significant_halite(current_ship, current_map, max_distance):
     """
@@ -41,9 +42,9 @@ def locate_significant_halite(current_ship, current_map, max_distance):
     relative_halite_positions = [ ]
 
     if max_distance == 0:   #until we learn to override in python
-        max_distance = Maximal_Consideration_Distance
+        max_distance = myglobals.Constants.Maximal_Consideration_Distance
 
-    if current_map[current_ship.position].halite_amount >= Worth_Mining_Halite:
+    if current_map[current_ship.position].halite_amount >= myglobals.Constants.Worth_Mining_Halite:
         relative_halite_positions.append( { 'position': current_ship.position },
                                           { 'quantity': current_map[current_ship.position].halite_amount }, )
 
@@ -57,11 +58,12 @@ def locate_significant_halite(current_ship, current_map, max_distance):
             if (downward_step == 1) or (downward_step == max_distance):
                 #start at the left
                 for ouah in [0..int(max_distance / 2)]:
-                    current_search_position.directional_offset(Direction.West)
+                    current_search_position = current_search_position.directional_offset(Direction.West)
 
                 for right_step in [0..max_distance - 1]:
-                    current_search_position.directional_offset(Direction.East)
-                    relative_halite_positions.append( { 'position': })
+                    current_search_position = current_search_position.directional_offset(Direction.East)
+                    relative_halite_positions.append( { 'position': current_search_position,
+                                                        'quantity': current_map[current_search_position].halite_amount }, )
 
 
 def locate_nearest_base(current_ship, current_map):

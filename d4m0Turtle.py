@@ -7,7 +7,7 @@ import hlt
 # This library contains constant values.
 from hlt import constants
 from hlt.positionals import Direction
-#import random
+import random
 import logging
 
 #d4m0 imports
@@ -48,13 +48,13 @@ while True:
             #base only)
             #locate_nearest_base() in analytics will handle this eventually
             command_queue.append(
-                naive_navigate(ship, locate_nearest_base(ship, game_map)))
+                game_map.naive_navigate(ship, locate_nearest_base(ship, game_map)))
             #NOTE: docking analogous routine is ship.make_dropoff()
 
         
 
-
         #d4m0 schitt ends
+
         # For each of your ships, move randomly if the ship is on a low halite location or the ship is full.
         #   Else, collect halite.
         if game_map[ship.position].halite_amount < constants.MAX_HALITE / 10 or ship.is_full:
