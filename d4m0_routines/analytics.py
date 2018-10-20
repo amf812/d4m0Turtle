@@ -1,6 +1,11 @@
 """
 analytics.py
 
+Started on: 19oct18 (or well that's when I remembered at add this note,
+anyway)
+
+Just a little bit of logic for making the game data a little more useful to
+us for smarter (and quicker!) processing.
 """
 
 #from hlt import constants, game_map
@@ -32,39 +37,106 @@ def locate_significant_halite(current_ship, current_map, max_distance):
         max_distance: integer signifying how far from location to search
 
     Returns:
-
-
+        relative_halite_positions: array of dicts, w/'position' & 'quantity'
     """
 
     #main routine has already determined whether or not we're too close to full
     #for this to be viable
+    if myglobals.Constants.DEBUGGING['locate_ore']:
+        myglobals.Wrap.log.info("Gathering information to seek halite ore intelligently")
 
     relative_halite_positions = [ ]
 
     if max_distance == 0:   #until we learn to override in python
         max_distance = myglobals.Constants.Maximal_Consideration_Distance
 
-    if current_map[current_ship.position].halite_amount >= myglobals.Constants.Worth_Mining_Halite:
+    if current_map[current_ship.position].halite_amount >= myglobals.Constants.Worth_Mining_Halite: #massage
+        #add the current ship's position, if we need it
+        if myglobals.Constants.DEBUGGING['perimeter_search']:   #technically not part of the perimeter, but #whadevah
+            myglobals.Wrap.log.info("Checking original position")
+
         relative_halite_positions.append( { 'position': current_ship.position },
                                           { 'quantity': current_map[current_ship.position].halite_amount }, )
 
-        #return { 'relative_halite' : relative_halite }
     else:
-        #start snooping around
-        cntr = 1
-        current_search_position = Position(current_ship.position)
+        #start at the 'top' of the grid
+        current_search_position = PerimeterSearch.top_start(current_ship.position, max_distance)
 
         for downward_step in [0..max_distance - 1]:
-            if (downward_step == 1) or (downward_step == max_distance):
-                #start at the left
-                for ouah in [0..int(max_distance / 2)]:
-                    current_search_position = current_search_position.directional_offset(Direction.West)
+            # start at the left
+            current_search_position = PerimeterSearch.left_start(current_search_position, max_distance)
 
-                for right_step in [0..max_distance - 1]:
+            if (downward_step == 0) or (downward_step == (max_distance - 1)):
+                for right_step in [0..max_distance - 1]:    #aaaand move to the right
                     current_search_position = current_search_position.directional_offset(Direction.East)
                     relative_halite_positions.append( { 'position': current_search_position,
-                                                        'quantity': current_map[current_search_position].halite_amount }, )
+                                                        'quantity':
+                                                            current_map[current_search_position].halite_amount }, )
 
+                    if myglobals.Constants.DEBUGGING['perimeter_search']:
+                        myglobals.Wrap.log.info("")
+
+            else:
+                #left perimeter edge for this row
+                relative_halite_positions.append( { 'position': current_search_position,
+                                                    'quantity':
+                                                        current_map[current_search_position].halite_amount }, )
+
+                #right perimeter edge for this row
+                current_search_position = PerimeterSearch.right_margin(current_search_position, max_distance)
+                relative_halite_positions.append( { 'position': current_search_position,
+                                                    'quantity':
+                                                        current_map[current_search_position].halite_amount }, )
+
+    return relative_halite_positions
+
+class PerimeterSearch:
+    def left_start(search_pos, max_dist):
+        """
+        Simply bumps the search position to the far left of its grid area for this
+        iteration and returns it.
+
+        :param search_pos:
+        :param max_dist:
+        :return:
+        """
+
+        #start at the left, return the position where we can do this
+        for ouah in [0..int(max_dist / 2)]:
+            search_pos = search_pos.directional_offset(Direction.West)
+
+        return search_pos
+
+    def right_margin(search_pos, max_dist):
+        """
+        Moves from the far left of the grid boundary to the far right and returns
+        the Position
+
+        :param search_pos:
+        :param max_dist:
+        :return:
+        """
+
+        for ouah in [1..max_dist]:
+            search_pos = search_pos.directional_offset(Direction.East)
+
+        return search_pos
+
+    def top_start(search_pos, max_dist):
+        """
+        Simply bumps the search position to the top of its grid area for this
+        iteration and returns it.
+
+        :param search_pos:
+        :param max_dist:
+        :return:
+        """
+
+        #start at the top, return the position, etc
+        for ouah in [0..int(max_dist / 2)]:
+            search_pos = search_pos.directional_offset(Direction.North)
+
+        return search_pos
 
 def locate_nearest_base(current_ship, current_map):
     """

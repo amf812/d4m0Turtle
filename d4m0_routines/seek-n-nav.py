@@ -1,4 +1,9 @@
 """
+seek-n-nav.py
+
+Started on: 19oct18 (or well that's when I remembered at add this note,
+anyway)
+
 routines for general seeking out of halite ore resources w/basic resource
 location determination and navigation to it
 """

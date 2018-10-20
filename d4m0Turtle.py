@@ -1,6 +1,19 @@
 #!/usr/bin/env python3
 # Python 3.6
 
+"""
+d4m0Turtle.py
+
+Started on: 19oct18 (or well that's when I remembered at add this note,
+anyway)
+
+Just my first attempt at getting a bot going decently in the Halite III AI
+coding competition; still have 2.75 months left to go on it right now.  So
+I guess the estimated final version has to be in right around the middle of
+January.  Good project to keep me busy in winter, and to get my skills up to
+the best level they can be (at least in py3).
+"""
+
 # Import the Halite SDK, which will let you interact with the game.
 import hlt
 
@@ -50,6 +63,11 @@ while True:
             command_queue.append(
                 game_map.naive_navigate(ship, locate_nearest_base(ship, game_map)))
             #NOTE: docking analogous routine is ship.make_dropoff()
+
+            if d4m0_routines.myglobals.Constants.DEBUGGING['seek']:
+                d4m0_routines.myglobals.Wrap.log.info("Seeking nearest base")
+        else:
+            #find some ore, por dios
 
         
 
