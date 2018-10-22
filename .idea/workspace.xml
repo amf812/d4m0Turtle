@@ -2,10 +2,7 @@
 <project version="4">
   <component name="ChangeListManager">
     <list default="true" id="dfa12ecb-cbf5-47e3-aef9-238e95227d2a" name="Default Changelist" comment="">
-      <change beforePath="$PROJECT_DIR$/d4m0Turtle.py" beforeDir="false" afterPath="$PROJECT_DIR$/d4m0Turtle.py" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/d4m0_routines/analytics.py" beforeDir="false" afterPath="$PROJECT_DIR$/d4m0_routines/analytics.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/d4m0_routines/myglobals.py" beforeDir="false" afterPath="$PROJECT_DIR$/d4m0_routines/myglobals.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/d4m0_routines/seek-n-nav.py" beforeDir="false" afterPath="$PROJECT_DIR$/d4m0_routines/seek-n-nav.py" afterDir="false" />
     </list>
     <option name="EXCLUDED_CONVERTED_TO_IGNORED" value="true" />
     <option name="SHOW_DIALOG" value="false" />
@@ -33,12 +30,12 @@
       </usages-collector>
       <usages-collector id="statistics.file.extensions.edit">
         <counts>
-          <entry key="py" value="3911" />
+          <entry key="py" value="4881" />
         </counts>
       </usages-collector>
       <usages-collector id="statistics.file.types.edit">
         <counts>
-          <entry key="Python" value="3911" />
+          <entry key="Python" value="4881" />
         </counts>
       </usages-collector>
       <usages-collector id="statistics.vcs.git.usages" />
@@ -46,10 +43,10 @@
   </component>
   <component name="FileEditorManager">
     <leaf>
-      <file pinned="false" current-in-tab="true">
+      <file pinned="false" current-in-tab="false">
         <entry file="file://$PROJECT_DIR$/d4m0Turtle.py">
           <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="198">
+            <state relative-caret-position="243">
               <caret line="67" column="45" selection-start-line="67" selection-start-column="45" selection-end-line="67" selection-end-column="45" />
               <folding>
                 <element signature="e#105#115#0" expanded="true" />
@@ -58,19 +55,20 @@
           </provider>
         </entry>
       </file>
-      <file pinned="false" current-in-tab="false">
+      <file pinned="false" current-in-tab="true">
         <entry file="file://$PROJECT_DIR$/d4m0_routines/analytics.py">
           <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="1140">
-              <caret line="76" column="38" selection-start-line="76" selection-start-column="38" selection-end-line="76" selection-end-column="38" />
+            <state relative-caret-position="633">
+              <caret line="173" lean-forward="true" selection-start-line="173" selection-end-line="173" />
               <folding>
                 <element signature="e#60#107#0" expanded="true" />
-                <marker date="1540035057834" expanded="true" signature="4422:4427" ph="..." />
-                <marker date="1540035057834" expanded="true" signature="4634:4639" ph="..." />
-                <marker date="1540035057834" expanded="true" signature="4890:4895" ph="..." />
-                <marker date="1540035057834" expanded="true" signature="4890:5223" ph="..." />
-                <marker date="1540035057834" expanded="true" signature="5263:5268" ph="..." />
-                <marker date="1540035057834" expanded="true" signature="5263:5667" ph="..." />
+                <marker date="1540217019554" expanded="true" signature="4422:4427" ph="..." />
+                <marker date="1540217019554" expanded="true" signature="4634:4639" ph="..." />
+                <marker date="1540217019554" expanded="true" signature="4890:4895" ph="..." />
+                <marker date="1540217019554" expanded="true" signature="4890:5223" ph="..." />
+                <marker date="1540217019554" expanded="true" signature="5263:5268" ph="..." />
+                <marker date="1540217019554" expanded="true" signature="5263:5667" ph="..." />
+                <marker date="1540217019554" expanded="true" signature="5865:5870" ph="..." />
               </folding>
             </state>
           </provider>
@@ -112,8 +110,8 @@
       <list>
         <option value="$PROJECT_DIR$/d4m0_routines/seek-n-nav.py" />
         <option value="$PROJECT_DIR$/d4m0_routines/myglobals.py" />
-        <option value="$PROJECT_DIR$/d4m0_routines/analytics.py" />
         <option value="$PROJECT_DIR$/d4m0Turtle.py" />
+        <option value="$PROJECT_DIR$/d4m0_routines/analytics.py" />
       </list>
     </option>
   </component>
@@ -224,28 +222,29 @@
         </state>
       </provider>
     </entry>
-    <entry file="file://$PROJECT_DIR$/d4m0_routines/analytics.py">
+    <entry file="file://$PROJECT_DIR$/d4m0Turtle.py">
       <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="1140">
-          <caret line="76" column="38" selection-start-line="76" selection-start-column="38" selection-end-line="76" selection-end-column="38" />
+        <state relative-caret-position="243">
+          <caret line="67" column="45" selection-start-line="67" selection-start-column="45" selection-end-line="67" selection-end-column="45" />
           <folding>
-            <element signature="e#60#107#0" expanded="true" />
-            <marker date="1540035057834" expanded="true" signature="4422:4427" ph="..." />
-            <marker date="1540035057834" expanded="true" signature="4634:4639" ph="..." />
-            <marker date="1540035057834" expanded="true" signature="4890:4895" ph="..." />
-            <marker date="1540035057834" expanded="true" signature="4890:5223" ph="..." />
-            <marker date="1540035057834" expanded="true" signature="5263:5268" ph="..." />
-            <marker date="1540035057834" expanded="true" signature="5263:5667" ph="..." />
+            <element signature="e#105#115#0" expanded="true" />
           </folding>
         </state>
       </provider>
     </entry>
-    <entry file="file://$PROJECT_DIR$/d4m0Turtle.py">
+    <entry file="file://$PROJECT_DIR$/d4m0_routines/analytics.py">
       <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="198">
-          <caret line="67" column="45" selection-start-line="67" selection-start-column="45" selection-end-line="67" selection-end-column="45" />
+        <state relative-caret-position="633">
+          <caret line="173" lean-forward="true" selection-start-line="173" selection-end-line="173" />
           <folding>
-            <element signature="e#105#115#0" expanded="true" />
+            <element signature="e#60#107#0" expanded="true" />
+            <marker date="1540217019554" expanded="true" signature="4422:4427" ph="..." />
+            <marker date="1540217019554" expanded="true" signature="4634:4639" ph="..." />
+            <marker date="1540217019554" expanded="true" signature="4890:4895" ph="..." />
+            <marker date="1540217019554" expanded="true" signature="4890:5223" ph="..." />
+            <marker date="1540217019554" expanded="true" signature="5263:5268" ph="..." />
+            <marker date="1540217019554" expanded="true" signature="5263:5667" ph="..." />
+            <marker date="1540217019554" expanded="true" signature="5865:5870" ph="..." />
           </folding>
         </state>
       </provider>
