@@ -53,10 +53,16 @@ def locate_significant_halite(current_ship, current_map, max_distance):
     if current_map[current_ship.position].halite_amount >= myglobals.Constants.Worth_Mining_Halite: #massage
         #add the current ship's position, if we need it
         if myglobals.Constants.DEBUGGING['perimeter_search']:   #technically not part of the perimeter, but #whadevah
-            myglobals.Wrap.log.info("Checking original position")
+            myglobals.Wrap.log.info("Checking original position...")
 
         relative_halite_positions.append( { 'position': current_ship.position },
                                           { 'quantity': current_map[current_ship.position].halite_amount }, )
+
+        if myglobals.Constants.DEBUGGING['perimeter_search'] and \
+            current_map[current_ship.position].halite_amount > myglobals.Constants.Worth_Mining_Halite:
+            myglobals.Wrap.log.info(" * found: " + current_map[current_ship.position].halite_amount)
+        elif myglobals.Constants.DEBUGGING['perimeter_search']:
+            myglobals.Wrap.log.info(" * found 0 or insufficient ore to bother")
 
     else:
         #start at the 'top' of the grid
@@ -69,12 +75,15 @@ def locate_significant_halite(current_ship, current_map, max_distance):
             if (downward_step == 0) or (downward_step == (max_distance - 1)):
                 for right_step in [0..max_distance - 1]:    #aaaand move to the right
                     current_search_position = current_search_position.directional_offset(Direction.East)
+
+                    if myglobals.Constants.DEBUGGING['perimeter_search']:
+                        myglobals.Wrap.log.info("Checking for ore at position: " + current_search_position)
+                        myglobals.Wrap.log.info(" * found " + current_map[current_search_position].halite_amount + \
+                                                " ore")
+
                     relative_halite_positions.append( { 'position': current_search_position,
                                                         'quantity':
                                                             current_map[current_search_position].halite_amount }, )
-
-                    if myglobals.Constants.DEBUGGING['perimeter_search']:
-                        myglobals.Wrap.log.info("")
 
             else:
                 #left perimeter edge for this row
@@ -138,36 +147,5 @@ class PerimeterSearch:
 
         return search_pos
 
-def locate_nearest_base(current_ship, current_map):
-    """
-    locates the closest base we own in order to go drop off the halite ore
-    """
 
-def sort_list_of_dicts_by_key(current_list, sort_key):
-    """
-    This will probably end up getting moved somewhere out of the analytics
-    codebase here, as I end up with more generalized routines to go with it.
-    Note that it expects that the value contained under the sort_key will be
-    numeric, for sorting (derp).
-
-    :param current_list:
-    :param sort_key:
-    :return: sorted list
-    """
-
-    new_list = current_list
-
-    #I guess we'll just bubble sort for now; my motivation for remembering or
-    #rediscovering a different algorithm is a little lacking; I really need to
-    #try to get to that at some point, though, because speed demands will end
-    #up making it pretty significant if this is heavily utilized
-    for cntr in [0..len(current_list) - 2]:
-        for cntr2 in [0..len(current_list) - 1]:
-            if new_list[cntr2][sort_key] > new_list[cntr2 + 1][sort_key]:
-                x = new_list[cntr2]
-                y = new_list[cntr2 + 1]
-                new_list[cntr2] = y
-                new_list[cntr2 + 1] = x
-
-    return new_list
 

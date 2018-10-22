@@ -24,7 +24,7 @@ import random
 import logging
 
 #d4m0 imports
-import d4m0_routines
+from d4m0_routines import analytics, seek_n_nav, myglobals
 
 """ <<<Game Begin>>> """
 
@@ -61,14 +61,20 @@ while True:
             #base only)
             #locate_nearest_base() in analytics will handle this eventually
             command_queue.append(
-                game_map.naive_navigate(ship, locate_nearest_base(ship, game_map)))
+                game_map.naive_navigate(ship, seek_n_nav.locate_nearest_base(ship, game_map)))
             #NOTE: docking analogous routine is ship.make_dropoff()
 
-            if d4m0_routines.myglobals.Constants.DEBUGGING['seek']:
-                d4m0_routines.myglobals.Wrap.log.info("Seeking nearest base")
+            if myglobals.Constants.DEBUGGING['seek']:
+                myglobals.Wrap.log.info("Seeking nearest dropoff")
+
+
         else:
             #find some ore, por dios
+            if myglobals.Constants.DEBUGGING['locate_ore']:
+                myglobals.Wrap.log.info("Looking for close ore deposits")
 
+            relative_halite = analytics.locate_significant_halite(ship, game_map, 3)
+            #don't do fuckall else for this, we're just testing...
         
 
         #d4m0 schitt ends
