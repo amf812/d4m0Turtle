@@ -12,7 +12,7 @@ us for smarter (and quicker!) processing.
 
 from hlt.positionals import Direction, Position
 from operator import itemgetter
-from . import myglobals
+from . import myglobals, seek_n_nav
 
 import logging
 
@@ -91,6 +91,50 @@ class Analyze:
 
         return relative_halite_positions
 
+    def can_we_embark_and_start_mining(cur_ship, cur_map, cur_me):
+        """
+        decide whether or not to mine with this ship
+
+        :param cur_ship:
+        :param cur_map:
+        :param cur_me:
+        :return:
+        """
+
+        # is it full?
+        if cur_ship.is_full:  # we'll test this for being close to full, also
+            # locate closest base & deposit (for now we'll do this w/initial
+            # base only)
+            # locate_nearest_base() in analytics will handle this eventually
+
+            c_queue_addition = cur_ship.move(
+                cur_map.naive_navigate(cur_ship,
+                                       seek_n_nav.FindApproach.locate_nearest_base(cur_ship, cur_map, cur_me)))
+
+            # NOTE: docking analogous routine is ship.make_dropoff()
+
+            if myglobals.Const.DEBUGGING['seek']:
+                logging.info("Seeking nearest dropoff")
+
+
+        else:
+            # find some ore, por dios
+            if myglobals.Const.DEBUGGING['locate_ore']:
+                logging.info("Looking for close ore deposits...  Maximal " + \
+                             "consideration distance: " + \
+                             str(myglobals.Const.Maximal_Consideration_Distance) + \
+                             "; halite to be worth mining: " + \
+                             str(myglobals.Const.Worth_Mining_Halite))
+
+            relative_halite = Analyze.locate_significant_halite(cur_ship, cur_map)
+            if myglobals.Const.DEBUGGING['locate_ore']:
+                logging.info(" - relative_halite: " + str(
+                    sorted(relative_halite, key=itemgetter('quantity'), reverse=True)))
+
+            c_queue_addition = cur_ship.move(cur_map.naive_navigate(cur_ship,
+                    seek_n_nav.FindApproach.target_halite_simple(cur_ship, cur_map, relative_halite)))
+
+        return c_queue_addition
 
 class PerimeterSearch:
     def left_start(search_pos, max_dist):

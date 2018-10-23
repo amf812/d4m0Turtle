@@ -5,7 +5,6 @@
       <change beforePath="$PROJECT_DIR$/d4m0Turtle.py" beforeDir="false" afterPath="$PROJECT_DIR$/d4m0Turtle.py" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/d4m0_routines/analytics.py" beforeDir="false" afterPath="$PROJECT_DIR$/d4m0_routines/analytics.py" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/d4m0_routines/myglobals.py" beforeDir="false" afterPath="$PROJECT_DIR$/d4m0_routines/myglobals.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/d4m0_routines/seek_n_nav.py" beforeDir="false" afterPath="$PROJECT_DIR$/d4m0_routines/seek_n_nav.py" afterDir="false" />
     </list>
     <option name="EXCLUDED_CONVERTED_TO_IGNORED" value="true" />
     <option name="SHOW_DIALOG" value="false" />
@@ -34,13 +33,13 @@
       <usages-collector id="statistics.file.extensions.edit">
         <counts>
           <entry key="dummy" value="2" />
-          <entry key="py" value="11379" />
+          <entry key="py" value="12968" />
         </counts>
       </usages-collector>
       <usages-collector id="statistics.file.types.edit">
         <counts>
           <entry key="PLAIN_TEXT" value="2" />
-          <entry key="Python" value="11379" />
+          <entry key="Python" value="12968" />
         </counts>
       </usages-collector>
       <usages-collector id="statistics.vcs.git.usages" />
@@ -51,27 +50,8 @@
       <file pinned="false" current-in-tab="true">
         <entry file="file://$PROJECT_DIR$/d4m0Turtle.py">
           <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="243">
-              <caret line="88" column="24" selection-start-line="88" selection-start-column="24" selection-end-line="88" selection-end-column="24" />
-              <folding>
-                <element signature="e#559#569#0" expanded="true" />
-              </folding>
-            </state>
-          </provider>
-        </entry>
-      </file>
-      <file pinned="false" current-in-tab="false">
-        <entry file="file://$PROJECT_DIR$/hlt/positionals.py">
-          <provider selected="true" editor-type-id="text-editor" />
-        </entry>
-      </file>
-      <file pinned="false" current-in-tab="false">
-        <entry file="file://$PROJECT_DIR$/hlt/game_map.py">
-          <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="-270">
-              <folding>
-                <element signature="e#0#12#0" expanded="true" />
-              </folding>
+            <state relative-caret-position="-984">
+              <caret line="19" column="47" selection-start-line="19" selection-start-column="47" selection-end-line="19" selection-end-column="47" />
             </state>
           </provider>
         </entry>
@@ -79,30 +59,16 @@
       <file pinned="false" current-in-tab="false">
         <entry file="file://$PROJECT_DIR$/d4m0_routines/analytics.py">
           <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="1335">
-              <caret line="89" column="9" selection-start-line="89" selection-start-column="9" selection-end-line="89" selection-end-column="9" />
+            <state relative-caret-position="555">
+              <caret line="133" column="31" selection-start-line="133" selection-start-column="31" selection-end-line="133" selection-end-column="45" />
               <folding>
                 <element signature="e#235#282#0" expanded="true" />
-                <marker date="1540297674602" expanded="true" signature="433:438" ph="..." />
-                <marker date="1540297674602" expanded="true" signature="4396:4401" ph="..." />
-                <marker date="1540297674602" expanded="true" signature="4608:4613" ph="..." />
-                <marker date="1540297674602" expanded="true" signature="4897:4902" ph="..." />
-                <marker date="1540297674602" expanded="true" signature="4897:5235" ph="..." />
-                <marker date="1540297674602" expanded="true" signature="5275:5280" ph="..." />
-              </folding>
-            </state>
-          </provider>
-        </entry>
-      </file>
-      <file pinned="false" current-in-tab="false">
-        <entry file="file://$PROJECT_DIR$/d4m0_routines/myglobals.py">
-          <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="210">
-              <caret line="26" column="1" selection-start-line="26" selection-start-column="1" selection-end-line="26" selection-end-column="1" />
-              <folding>
-                <element signature="e#146#156#0" expanded="true" />
-                <marker date="1540297362622" expanded="true" signature="506:507" ph="..." />
-                <marker date="1540297362622" expanded="true" signature="506:511" ph="..." />
+                <marker date="1540302997882" expanded="true" signature="445:450" ph="..." />
+                <marker date="1540302997882" expanded="true" signature="6279:6284" ph="..." />
+                <marker date="1540302997882" expanded="true" signature="6491:6496" ph="..." />
+                <marker date="1540302997882" expanded="true" signature="6780:6785" ph="..." />
+                <marker date="1540302997882" expanded="true" signature="6780:7118" ph="..." />
+                <marker date="1540302997882" expanded="true" signature="7158:7163" ph="..." />
               </folding>
             </state>
           </provider>
@@ -117,6 +83,20 @@
                 <marker date="1540297803643" expanded="true" signature="339:344" ph="..." />
                 <marker date="1540297803643" expanded="true" signature="339:1148" ph="..." />
                 <marker date="1540297803643" expanded="true" signature="1574:1575" ph="..." />
+              </folding>
+            </state>
+          </provider>
+        </entry>
+      </file>
+      <file pinned="false" current-in-tab="false">
+        <entry file="file://$PROJECT_DIR$/d4m0_routines/myglobals.py">
+          <provider selected="true" editor-type-id="text-editor">
+            <state relative-caret-position="285">
+              <caret line="19" column="27" selection-start-line="19" selection-start-column="27" selection-end-line="19" selection-end-column="27" />
+              <folding>
+                <element signature="e#146#156#0" expanded="true" />
+                <marker date="1540302997790" expanded="true" signature="534:535" ph="..." />
+                <marker date="1540302997790" expanded="true" signature="534:539" ph="..." />
               </folding>
             </state>
           </provider>
@@ -139,9 +119,9 @@
     <option name="CHANGED_PATHS">
       <list>
         <option value="$PROJECT_DIR$/d4m0_routines/seek-n-nav.py" />
+        <option value="$PROJECT_DIR$/d4m0_routines/seek_n_nav.py" />
         <option value="$PROJECT_DIR$/d4m0_routines/myglobals.py" />
         <option value="$PROJECT_DIR$/d4m0_routines/analytics.py" />
-        <option value="$PROJECT_DIR$/d4m0_routines/seek_n_nav.py" />
         <option value="$PROJECT_DIR$/d4m0Turtle.py" />
       </list>
     </option>
@@ -287,28 +267,12 @@
     </entry>
     <entry file="file://$PROJECT_DIR$/d4m0_routines/myglobals.py">
       <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="210">
-          <caret line="26" column="1" selection-start-line="26" selection-start-column="1" selection-end-line="26" selection-end-column="1" />
+        <state relative-caret-position="285">
+          <caret line="19" column="27" selection-start-line="19" selection-start-column="27" selection-end-line="19" selection-end-column="27" />
           <folding>
             <element signature="e#146#156#0" expanded="true" />
-            <marker date="1540297362622" expanded="true" signature="506:507" ph="..." />
-            <marker date="1540297362622" expanded="true" signature="506:511" ph="..." />
-          </folding>
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/d4m0_routines/analytics.py">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="1335">
-          <caret line="89" column="9" selection-start-line="89" selection-start-column="9" selection-end-line="89" selection-end-column="9" />
-          <folding>
-            <element signature="e#235#282#0" expanded="true" />
-            <marker date="1540297674602" expanded="true" signature="433:438" ph="..." />
-            <marker date="1540297674602" expanded="true" signature="4396:4401" ph="..." />
-            <marker date="1540297674602" expanded="true" signature="4608:4613" ph="..." />
-            <marker date="1540297674602" expanded="true" signature="4897:4902" ph="..." />
-            <marker date="1540297674602" expanded="true" signature="4897:5235" ph="..." />
-            <marker date="1540297674602" expanded="true" signature="5275:5280" ph="..." />
+            <marker date="1540302997790" expanded="true" signature="534:535" ph="..." />
+            <marker date="1540302997790" expanded="true" signature="534:539" ph="..." />
           </folding>
         </state>
       </provider>
@@ -325,13 +289,26 @@
         </state>
       </provider>
     </entry>
+    <entry file="file://$PROJECT_DIR$/d4m0_routines/analytics.py">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="555">
+          <caret line="133" column="31" selection-start-line="133" selection-start-column="31" selection-end-line="133" selection-end-column="45" />
+          <folding>
+            <element signature="e#235#282#0" expanded="true" />
+            <marker date="1540302997882" expanded="true" signature="445:450" ph="..." />
+            <marker date="1540302997882" expanded="true" signature="6279:6284" ph="..." />
+            <marker date="1540302997882" expanded="true" signature="6491:6496" ph="..." />
+            <marker date="1540302997882" expanded="true" signature="6780:6785" ph="..." />
+            <marker date="1540302997882" expanded="true" signature="6780:7118" ph="..." />
+            <marker date="1540302997882" expanded="true" signature="7158:7163" ph="..." />
+          </folding>
+        </state>
+      </provider>
+    </entry>
     <entry file="file://$PROJECT_DIR$/d4m0Turtle.py">
       <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="243">
-          <caret line="88" column="24" selection-start-line="88" selection-start-column="24" selection-end-line="88" selection-end-column="24" />
-          <folding>
-            <element signature="e#559#569#0" expanded="true" />
-          </folding>
+        <state relative-caret-position="-984">
+          <caret line="19" column="47" selection-start-line="19" selection-start-column="47" selection-end-line="19" selection-end-column="47" />
         </state>
       </provider>
     </entry>

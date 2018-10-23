@@ -17,6 +17,7 @@ class Const:
         'seek': True,
         'locate_ore': True,
         'perimeter_search': True,
+        'save_state': True,
     }
 
     Worth_Mining_Halite = 25  # int(constants.MAX_HALITE * 0.2)

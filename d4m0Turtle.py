@@ -74,53 +74,47 @@ while True:
         #d4m0 schitt starts
 
         #is this ship already in transit to mine?
-        if current_assignments[ship.id]:
+        try:
+            if myglobals.Const.DEBUGGING['save_state']:
+                logging.debug("Ship id " + str(ship.id) + " has state set to " + \
+                              current_assignments[ship.id]['mission'])
+
             if current_assignments[ship.id]['mission'] != 'mining' \
-                and current_assignments[ship.id]['mission'] != 'transit' \
-                and current_assignments[ship.id].mission != 'dropoff':
-                #we should be good to send it on its way
-                if myglobals.Const.DEBUGGING['core']:
+                    and current_assignments[ship.id]['mission'] != 'transit' \
+                    and current_assignments[ship.id]['mission'] != 'dropoff':
+
+                # we should be good to send it on its way
+                if myglobals.Const.DEBUGGING['save_state']:
                     logging.info("Found ship " + str(ship.id) + " ready for mission.")
 
-                #so yeah, now we incorporate the whether or not to mine/dropoff block below  with new indent levels
+                # so yeah, now we incorporate the whether or not to mine/dropoff
+                # block (now in analytics) with new indent levels
+                command_queue.append(analytics.Analyze.can_we_embark_and_start_mining(ship, game_map, me))
 
             else:
                 command_queue.append(game_map.naive_navigate(ship, current_assignments[ship.id]['destination']))
                 continue
 
-        #decide whether or not to mine with this ship
-        #is it full?
-        if ship.is_full:	#we'll test this for being close to full, also
-            #locate closest base & deposit (for now we'll do this w/initial
-            #base only)
-            #locate_nearest_base() in analytics will handle this eventually
+        except KeyError:
+            logging.debug("In KeyError try/except loop")
 
-            command_queue.append(
-                game_map.naive_navigate(ship, seek_n_nav.locate_nearest_base(ship, game_map, me)))
-
-            #NOTE: docking analogous routine is ship.make_dropoff()
-
-            if myglobals.Const.DEBUGGING['seek']:
-                logging.info("Seeking nearest dropoff")
+            #current_assignments[ship.id] = { 'mission': 'transit', 'turnstamp': turn, 'destination': None }
 
 
-        else:
-            #find some ore, por dios
-            if myglobals.Const.DEBUGGING['locate_ore']:
-                logging.info("Looking for close ore deposits...  Maximal " + \
-                             "consideration distance: " + \
-                             str(myglobals.Const.Maximal_Consideration_Distance) + \
-                             "; halite to be worth mining: " + \
-                             str(myglobals.Const.Worth_Mining_Halite))
+            if not ship.is_full:
+                #for testing purposes right now we'll just send out mining no matter what
+                relative_halite = analytics.Analyze.locate_significant_halite(ship, game_map)
+                target = seek_n_nav.FindApproach.target_halite_simple(ship, game_map, relative_halite)
+                current_assignments[ship.id] = { 'mission': 'transit', #unless right over mining loc (ignoring for now)
+                                                 'turnstamp': turn, 'destination': target, }
 
-            relative_halite = analytics.Analyze.locate_significant_halite(ship, game_map)
-            if myglobals.Const.DEBUGGING['locate_ore']:
-                logging.info(" - relative_halite: " + str(
-                    sorted(relative_halite, key=itemgetter('quantity'), reverse=True)))
+                command_queue.append(game_map.naive_navigate(ship, target))
+            else:
+                target = seek_n_nav.FindApproach.locate_nearest_base(ship, game_map, me)
+                current_assignments[ship.id] = { 'mission': 'transit', #unless over dropoff, derp
+                                                 'turnstamp': turn, 'destination': target, }
 
-            command_queue.append(
-                ship.move(game_map.naive_navigate(
-                    ship, seek_n_nav.FindApproach.target_halite_simple(ship, game_map, relative_halite))))
+                command_queue.append(game_map.naive_navigate(ship, target))
 
         #d4m0 schitt ends
 
