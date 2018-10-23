@@ -42,24 +42,31 @@ turn = 0
 """ <<<Game Loop>>> """
 
 while True:
-    turn += 1
-    logging.info("-=+*Starting Turn: " + str(turn) + "*+=-")
     # This loop handles each turn of the game. The game object changes every turn, and you refresh that state by
     #   running update_frame().
-    logging.info("-init-")
-    logging.info(" - updating frame")
+    if myglobals.Const.DEBUGGING['core']:
+        logging.info("-init-")
+        logging.info(" - updating frame")
+
     game.update_frame()
-    
+
+    if myglobals.Const.DEBUGGING['core']:
+        logging.info(" - updating 'me'")
     #keeps things speedier
-    logging.info(" - updating 'me'")
     me = game.me
-    logging.info(" - updating 'game_map'")
+
+    if myglobals.Const.DEBUGGING['core']:
+        logging.info(" - updating 'game_map'")
+    #speed, again (see if there are any places to implement anything like
+    # this with my own structs)
     game_map = game.game_map
 
-    logging.info(" - initializing 'command_queue'")
+    if myglobals.Const.DEBUGGING['core']:
+        logging.info(" - initializing 'command_queue'")
     command_queue = []
 
-    logging.info("me.get_ships(): " + str(me.get_ships()))
+    if myglobals.Const.DEBUGGING['core']:
+        logging.info("me.get_ships() dump: " + str(me.get_ships()))
 
     for ship in me.get_ships():
         #d4m0 schitt starts
@@ -70,8 +77,10 @@ while True:
             #locate closest base & deposit (for now we'll do this w/initial
             #base only)
             #locate_nearest_base() in analytics will handle this eventually
+
             command_queue.append(
-                game_map.naive_navigate(ship, seek_n_nav.locate_nearest_base(ship, game_map)))
+                game_map.naive_navigate(ship, seek_n_nav.locate_nearest_base(ship, game_map, me)))
+
             #NOTE: docking analogous routine is ship.make_dropoff()
 
             if myglobals.Const.DEBUGGING['seek']:
@@ -81,11 +90,17 @@ while True:
         else:
             #find some ore, por dios
             if myglobals.Const.DEBUGGING['locate_ore']:
-                logging.info("Looking for close ore deposits")
+                logging.info("Looking for close ore deposits...  Maximal " + \
+                             "consideration distance: " + \
+                             str(myglobals.Const.Maximal_Consideration_Distance) + \
+                             "; halite to be worth mining: " + \
+                             str(myglobals.Const.Worth_Mining_Halite))
 
             relative_halite = analytics.Analyze.locate_significant_halite(ship, game_map)
-            #don't do fuckall else for this, we're just testing...
-            logging.info("relative_halite: " + str(relative_halite))
+            if myglobals.Const.DEBUGGING['locate_ore']:
+                logging.info(" - relative_halite: " + str(relative_halite))
+
+
 
         #d4m0 schitt ends
 

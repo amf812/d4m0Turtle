@@ -7,6 +7,9 @@ anyway)
 Holds debugging and other constant values
 """
 
+import hlt
+from hlt import constants
+
 
 class Const:
     DEBUGGING = {
@@ -16,22 +19,10 @@ class Const:
         'perimeter_search': True,
     }
 
-    Worth_Mining_Halite = 500  # int(constants.MAX_HALITE * 0.2)
+    Worth_Mining_Halite = 25  # int(constants.MAX_HALITE * 0.2)
+    #Worth_Mining_Halite = int(constants.MAX_HALITE * 0.2)
     Maximal_Consideration_Distance = 5
 
-
-# class Constants:
-
-
-# constant schitt
-# Worth_Mining_Halite = constants.MAX_HALITE - (constants.MAX_HALITE * 0.2)  #wtf was I thinking?
-
-# Worth_Mining_Halite = 10
-# Maximal_Consideration_Distance = int(d4m0Turtle.me.width / 2)
-
-
-# class Wrap:
-#    log = logging.getLogger(__name__)
 
 class Misc:
     def sort_list_of_dicts_by_key(current_list, sort_key):

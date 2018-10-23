@@ -48,7 +48,6 @@ class Analyze:
 
         relative_halite_positions = [ ]
 
-        #if max_distance == 0:   #until we learn to override in python
         max_distance = myglobals.Const.Maximal_Consideration_Distance
 
         if current_map[current_ship.position].halite_amount >= myglobals.Const.Worth_Mining_Halite: #massage
@@ -56,14 +55,14 @@ class Analyze:
             if myglobals.Const.DEBUGGING['perimeter_search']:   #technically not part of the perimeter, but #whadevah
                 logging.info("Checking original position...")
 
-            relative_halite_positions.append( { 'position': current_ship.position },
-                                              { 'quantity': current_map[current_ship.position].halite_amount }, )
+            relative_halite_positions.append( { 'position': current_ship.position,
+                                                'quantity': current_map[current_ship.position].halite_amount }, )
 
             if myglobals.Const.DEBUGGING['perimeter_search'] and \
-                current_map[current_ship.position].halite_amount > myglobals.Constants.Worth_Mining_Halite:
-                logging.info(" * found: " + current_map[current_ship.position].halite_amount)
+                current_map[current_ship.position].halite_amount >= myglobals.Const.Worth_Mining_Halite:
+                logging.info(" * found: " + str(current_map[current_ship.position].halite_amount))
             elif myglobals.Const.DEBUGGING['perimeter_search']:
-                logging.info(" * found 0 or insufficient ore to bother")
+                logging.info(" * found < " + str(myglobals.Const.Worth_Mining_Halite) + " (not worth it [yet])")
 
         else:
             #start at the 'top' of the grid
