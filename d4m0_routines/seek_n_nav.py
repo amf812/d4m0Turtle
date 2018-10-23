@@ -10,7 +10,9 @@ location determination and navigation to it
 
 from operator import itemgetter
 
+
 class FindApproach:
+    @staticmethod
     def locate_nearest_base(current_ship, current_map, myself):
         """
         This will locate the closest dropoff we own in order to go drop off the
@@ -25,11 +27,12 @@ class FindApproach:
         :return: Position of the closest dropoff point
         """
 
-        #for now we're just going to leave this as a stub that'll return the
-        #first base, since I just want this active for testing purposes now
-        #that it's time to try out the ore's perimeter search
+        # for now we're just going to leave this as a stub that'll return the
+        # first base, since I just want this active for testing purposes now
+        # that it's time to try out the ore's perimeter search
         return myself.get_dropoff()
 
+    @staticmethod
     def target_halite_simple(current_turtle, current_map, halite):
         """
         This method will, for now, just pick a mining location, preferring

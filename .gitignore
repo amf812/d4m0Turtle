@@ -5,4 +5,5 @@
 *.pyc
 */.*
 *.log
+.idea/workspace.xml
 

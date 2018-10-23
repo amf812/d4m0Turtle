@@ -8,9 +8,7 @@ Just a little bit of logic for making the game data a little more useful to
 us for smarter (and quicker!) processing.
 """
 
-#import hlt
-
-from hlt.positionals import Direction, Position
+from hlt.positionals import Direction
 from operator import itemgetter
 from . import myglobals, seek_n_nav
 
@@ -18,6 +16,7 @@ import logging
 
 
 class Analyze:
+    @staticmethod
     def locate_significant_halite(current_ship, current_map):
         """
         Current algorithm idea:
@@ -42,8 +41,8 @@ class Analyze:
             relative_halite_positions: array of dicts, w/'position' & 'quantity'
         """
 
-        #main routine has already determined whether or not we're too close to full
-        #for this to be viable
+        # main routine has already determined whether or not we're too close to full
+        # for this to be viable
         if myglobals.Const.DEBUGGING['locate_ore']:
             logging.info("Gathering information to seek halite ore intelligently")
 
@@ -64,7 +63,7 @@ class Analyze:
 
                     if myglobals.Const.DEBUGGING['perimeter_search']:
                         logging.info("Checking for ore at position: " + str(current_search_position))
-                        logging.info(" * found " + str(current_map[current_search_position].halite_amount) + \
+                        logging.info(" * found " + str(current_map[current_search_position].halite_amount) +
                                      " ore")
 
                     relative_halite_positions.append({'position': current_search_position,
@@ -83,14 +82,15 @@ class Analyze:
                                                   'quantity':
                                                       current_map[current_search_position].halite_amount}, )
 
-        #sort that shit, don't leave it all messy
-        #relative_halite_positions = myglobals.Misc.sort_list_of_dicts_by_key(relative_halite_positions, 'quantity')
-        #if myglobals.Const.DEBUGGING['perimeter_search']:
+        # sort that shit, don't leave it all messy
+        # relative_halite_positions = myglobals.Misc.sort_list_of_dicts_by_key(relative_halite_positions, 'quantity')
+        # if myglobals.Const.DEBUGGING['perimeter_search']:
         #    logging.info("Sorting perimeter search results")
-        #relative_halite_positions = sorted(relative_halite_positions, key=itemgetter('quantity'), reverse=True)
+        # relative_halite_positions = sorted(relative_halite_positions, key=itemgetter('quantity'), reverse=True)
 
         return relative_halite_positions
 
+    @staticmethod
     def can_we_embark_and_start_mining(cur_ship, cur_map, cur_me):
         """
         decide whether or not to mine with this ship
@@ -116,14 +116,13 @@ class Analyze:
             if myglobals.Const.DEBUGGING['seek']:
                 logging.info("Seeking nearest dropoff")
 
-
         else:
             # find some ore, por dios
             if myglobals.Const.DEBUGGING['locate_ore']:
-                logging.info("Looking for close ore deposits...  Maximal " + \
-                             "consideration distance: " + \
-                             str(myglobals.Const.Maximal_Consideration_Distance) + \
-                             "; halite to be worth mining: " + \
+                logging.info("Looking for close ore deposits...  Maximal " +
+                             "consideration distance: " +
+                             str(myglobals.Const.Maximal_Consideration_Distance) +
+                             "; halite to be worth mining: " +
                              str(myglobals.Const.Worth_Mining_Halite))
 
             relative_halite = Analyze.locate_significant_halite(cur_ship, cur_map)
@@ -132,11 +131,14 @@ class Analyze:
                     sorted(relative_halite, key=itemgetter('quantity'), reverse=True)))
 
             c_queue_addition = cur_ship.move(cur_map.naive_navigate(cur_ship,
-                    seek_n_nav.FindApproach.target_halite_simple(cur_ship, cur_map, relative_halite)))
+                                             seek_n_nav.FindApproach.target_halite_simple(
+                                                 cur_ship, cur_map, relative_halite)))
 
         return c_queue_addition
 
+
 class PerimeterSearch:
+    @staticmethod
     def left_start(search_pos, max_dist):
         """
         Simply bumps the search position to the far left of its grid area for this
@@ -147,12 +149,13 @@ class PerimeterSearch:
         :return:
         """
 
-        #start at the left, return the position where we can do this
-        for ouah in range(0, int(max_dist / 2)):    #[0..int(max_dist / 2)]:
+        # start at the left, return the position where we can do this
+        for ouah in range(0, int(max_dist / 2)):    # [0..int(max_dist / 2)]:
             search_pos = search_pos.directional_offset(Direction.West)
 
         return search_pos
 
+    @staticmethod
     def right_margin(search_pos, max_dist):
         """
         Moves from the far left of the grid boundary to the far right and returns
@@ -168,6 +171,7 @@ class PerimeterSearch:
 
         return search_pos
 
+    @staticmethod
     def top_start(search_pos, max_dist):
         """
         Simply bumps the search position to the top of its grid area for this
@@ -178,10 +182,8 @@ class PerimeterSearch:
         :return:
         """
 
-        zero = 0
-
-        #start at the top, return the position, etc
-        for cntr in range(0, int(max_dist / 2)): #[0..max_dist / 2]:
+        # start at the top, return the position, etc
+        for cntr in range(0, int(max_dist / 2)):    # [0..max_dist / 2]:
             search_pos = search_pos.directional_offset(Direction.North)
 
         return search_pos
