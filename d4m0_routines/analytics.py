@@ -11,6 +11,7 @@ us for smarter (and quicker!) processing.
 #import hlt
 
 from hlt.positionals import Direction, Position
+from operator import itemgetter
 from . import myglobals
 
 import logging
@@ -50,54 +51,46 @@ class Analyze:
 
         max_distance = myglobals.Const.Maximal_Consideration_Distance
 
-        if current_map[current_ship.position].halite_amount >= myglobals.Const.Worth_Mining_Halite: #massage
-            #add the current ship's position, if we need it
-            if myglobals.Const.DEBUGGING['perimeter_search']:   #technically not part of the perimeter, but #whadevah
-                logging.info("Checking original position...")
+        # start at the 'top' of the grid
+        current_search_position = PerimeterSearch.top_start(current_ship.position, max_distance)
 
-            relative_halite_positions.append( { 'position': current_ship.position,
-                                                'quantity': current_map[current_ship.position].halite_amount }, )
+        for downward_step in range(0, (max_distance - 1)):  # [0..max_distance - 1]:
+            # start at the left
+            current_search_position = PerimeterSearch.left_start(current_search_position, max_distance)
 
-            if myglobals.Const.DEBUGGING['perimeter_search'] and \
-                current_map[current_ship.position].halite_amount >= myglobals.Const.Worth_Mining_Halite:
-                logging.info(" * found: " + str(current_map[current_ship.position].halite_amount))
-            elif myglobals.Const.DEBUGGING['perimeter_search']:
-                logging.info(" * found < " + str(myglobals.Const.Worth_Mining_Halite) + " (not worth it [yet])")
+            if (downward_step == 0) or (downward_step == (max_distance - 1)):
+                for right_step in range(0, (max_distance - 1)):  # [0..max_distance - 1]:    #aaaand move to the right
+                    current_search_position = current_search_position.directional_offset(Direction.East)
 
-        else:
-            #start at the 'top' of the grid
-            current_search_position = PerimeterSearch.top_start(current_ship.position, max_distance)
+                    if myglobals.Const.DEBUGGING['perimeter_search']:
+                        logging.info("Checking for ore at position: " + str(current_search_position))
+                        logging.info(" * found " + str(current_map[current_search_position].halite_amount) + \
+                                     " ore")
 
-            for downward_step in range(0, (max_distance - 1)):  #[0..max_distance - 1]:
-                # start at the left
-                current_search_position = PerimeterSearch.left_start(current_search_position, max_distance)
+                    relative_halite_positions.append({'position': current_search_position,
+                                                      'quantity':
+                                                          current_map[current_search_position].halite_amount}, )
 
-                if (downward_step == 0) or (downward_step == (max_distance - 1)):
-                    for right_step in range(0, (max_distance - 1)): #[0..max_distance - 1]:    #aaaand move to the right
-                        current_search_position = current_search_position.directional_offset(Direction.East)
+            else:
+                # left perimeter edge for this row
+                relative_halite_positions.append({'position': current_search_position,
+                                                  'quantity':
+                                                      current_map[current_search_position].halite_amount}, )
 
-                        if myglobals.Const.DEBUGGING['perimeter_search']:
-                            logging.info("Checking for ore at position: " + str(current_search_position))
-                            logging.info(" * found " + str(current_map[current_search_position].halite_amount) + \
-                                                " ore")
+                # right perimeter edge for this row
+                current_search_position = PerimeterSearch.right_margin(current_search_position, max_distance)
+                relative_halite_positions.append({'position': current_search_position,
+                                                  'quantity':
+                                                      current_map[current_search_position].halite_amount}, )
 
-                        relative_halite_positions.append( { 'position': current_search_position,
-                                                            'quantity':
-                                                                current_map[current_search_position].halite_amount }, )
-
-                else:
-                    #left perimeter edge for this row
-                    relative_halite_positions.append( { 'position': current_search_position,
-                                                        'quantity':
-                                                            current_map[current_search_position].halite_amount }, )
-
-                    #right perimeter edge for this row
-                    current_search_position = PerimeterSearch.right_margin(current_search_position, max_distance)
-                    relative_halite_positions.append( { 'position': current_search_position,
-                                                        'quantity':
-                                                            current_map[current_search_position].halite_amount }, )
+        #sort that shit, don't leave it all messy
+        #relative_halite_positions = myglobals.Misc.sort_list_of_dicts_by_key(relative_halite_positions, 'quantity')
+        #if myglobals.Const.DEBUGGING['perimeter_search']:
+        #    logging.info("Sorting perimeter search results")
+        #relative_halite_positions = sorted(relative_halite_positions, key=itemgetter('quantity'), reverse=True)
 
         return relative_halite_positions
+
 
 class PerimeterSearch:
     def left_start(search_pos, max_dist):

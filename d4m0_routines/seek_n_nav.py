@@ -8,6 +8,8 @@ routines for general seeking out of halite ore resources w/basic resource
 location determination and navigation to it
 """
 
+from operator import itemgetter
+
 class FindApproach:
     def locate_nearest_base(current_ship, current_map, myself):
         """
@@ -28,5 +30,21 @@ class FindApproach:
         #that it's time to try out the ore's perimeter search
         return myself.get_dropoff()
 
+    def target_halite_simple(current_turtle, current_map, halite):
+        """
+        This method will, for now, just pick a mining location, preferring
+        the highest quantity it can get, but dropping to the next ranked
+        spot on the list, if there is already a turtle present.
 
-#def def_target_halite_simple(current_turtle, halite_ranked_by_distance, halite_ranked_by_qty):
+        :param current_turtle:
+        :param current_map:
+        :param halite:
+        :return: location to navigate to
+        """
+
+        for loc_data in sorted(halite, key=itemgetter('quantity'), reverse=True):
+            if current_map[loc_data['position']].is_occupied:
+                continue
+            else:
+                return loc_data['position']     #find a way to raise exception
+                                                #if nothing is found

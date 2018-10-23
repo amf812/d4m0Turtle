@@ -23,7 +23,7 @@ import logging
 
 #d4m0 imports
 from d4m0_routines import analytics, seek_n_nav, myglobals
-#import d4m0_routines
+from operator import itemgetter
 
 """ <<<Game Begin>>> """
 
@@ -37,7 +37,9 @@ game.ready("D4m0Turtle")
 #   Here, you log here your id, which you can always fetch from the game object by using my_id.
 logging.info("Successfully hatched! My Player ID is {}.".format(game.my_id))
 
+#d4m0's init stuff
 turn = 0
+current_assignments = { }
 
 """ <<<Game Loop>>> """
 
@@ -71,6 +73,21 @@ while True:
     for ship in me.get_ships():
         #d4m0 schitt starts
 
+        #is this ship already in transit to mine?
+        if current_assignments[ship.id]:
+            if current_assignments[ship.id]['mission'] != 'mining' \
+                and current_assignments[ship.id]['mission'] != 'transit' \
+                and current_assignments[ship.id].mission != 'dropoff':
+                #we should be good to send it on its way
+                if myglobals.Const.DEBUGGING['core']:
+                    logging.info("Found ship " + str(ship.id) + " ready for mission.")
+
+                #so yeah, now we incorporate the whether or not to mine/dropoff block below  with new indent levels
+
+            else:
+                command_queue.append(game_map.naive_navigate(ship, current_assignments[ship.id]['destination']))
+                continue
+
         #decide whether or not to mine with this ship
         #is it full?
         if ship.is_full:	#we'll test this for being close to full, also
@@ -98,9 +115,12 @@ while True:
 
             relative_halite = analytics.Analyze.locate_significant_halite(ship, game_map)
             if myglobals.Const.DEBUGGING['locate_ore']:
-                logging.info(" - relative_halite: " + str(relative_halite))
+                logging.info(" - relative_halite: " + str(
+                    sorted(relative_halite, key=itemgetter('quantity'), reverse=True)))
 
-
+            command_queue.append(
+                ship.move(game_map.naive_navigate(
+                    ship, seek_n_nav.FindApproach.target_halite_simple(ship, game_map, relative_halite))))
 
         #d4m0 schitt ends
 
@@ -113,17 +133,20 @@ while True:
         #else:
         #indent the command below to recover this functionality when the hlt.constants shit is fixed
         #the conditional bit and north movement is d4m0 schitt; just the stay_still() was original
-        if turn >= 3:
-            command_queue.append(ship.stay_still())
-            logging.info("queued command for the ship to stay still")
-        else:
-            command_queue.append(ship.move(Direction.North))
-            logging.info("queued command for the ship to move north (1st turn)")
+        #if turn >= 3:
+        #    command_queue.append(ship.stay_still())
+        #    logging.info("queued command for the ship to stay still")
+        #else:
+        #    command_queue.append(ship.move(Direction.North))
+        #    logging.info("queued command for the ship to move north (1st turn)")
 
     # If the game is in the first 200 turns and you have enough halite, spawn a ship.
     # Don't spawn a ship if you currently have a ship at port, though - the ships will collide.
     if game.turn_number <= 200 and me.halite_amount >= 1000 and not game_map[me.shipyard].is_occupied:
         command_queue.append(me.shipyard.spawn())
+
+    #d4m0 end of turn schitt
+    turn += 1
 
     # Send your moves back to the game environment, ending this turn.
     game.end_turn(command_queue)
