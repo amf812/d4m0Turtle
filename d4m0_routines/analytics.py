@@ -15,6 +15,7 @@ from . import myglobals
 
 import logging
 
+
 class Analyze:
     def locate_significant_halite(current_ship, current_map):
         """
@@ -68,17 +69,17 @@ class Analyze:
             #start at the 'top' of the grid
             current_search_position = PerimeterSearch.top_start(current_ship.position, max_distance)
 
-            for downward_step in [0..max_distance - 1]:
+            for downward_step in range(0, (max_distance - 1)):  #[0..max_distance - 1]:
                 # start at the left
                 current_search_position = PerimeterSearch.left_start(current_search_position, max_distance)
 
                 if (downward_step == 0) or (downward_step == (max_distance - 1)):
-                    for right_step in [0..max_distance - 1]:    #aaaand move to the right
+                    for right_step in range(0, (max_distance - 1)): #[0..max_distance - 1]:    #aaaand move to the right
                         current_search_position = current_search_position.directional_offset(Direction.East)
 
                         if myglobals.Const.DEBUGGING['perimeter_search']:
-                            logging.info("Checking for ore at position: " + current_search_position)
-                            logging.info(" * found " + current_map[current_search_position].halite_amount + \
+                            logging.info("Checking for ore at position: " + str(current_search_position))
+                            logging.info(" * found " + str(current_map[current_search_position].halite_amount) + \
                                                 " ore")
 
                         relative_halite_positions.append( { 'position': current_search_position,
@@ -111,7 +112,7 @@ class PerimeterSearch:
         """
 
         #start at the left, return the position where we can do this
-        for ouah in [0..int(max_dist / 2)]:
+        for ouah in range(0, int(max_dist / 2)):    #[0..int(max_dist / 2)]:
             search_pos = search_pos.directional_offset(Direction.West)
 
         return search_pos
@@ -126,7 +127,7 @@ class PerimeterSearch:
         :return:
         """
 
-        for ouah in [1..max_dist]:
+        for ouah in range(1, max_dist):
             search_pos = search_pos.directional_offset(Direction.East)
 
         return search_pos
@@ -141,10 +142,10 @@ class PerimeterSearch:
         :return:
         """
 
-        #start at the top, return the position, etc
-        half_max = int(max_dist / 2)
+        zero = 0
 
-        for ouah in [0..half_max]:
+        #start at the top, return the position, etc
+        for cntr in range(0, int(max_dist / 2)): #[0..max_dist / 2]:
             search_pos = search_pos.directional_offset(Direction.North)
 
         return search_pos
