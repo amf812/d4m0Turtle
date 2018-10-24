@@ -76,6 +76,9 @@ while True:
                 logging.debug("Ship id " + str(ship.id) + " has state set to " +
                               myglobals.Variables.current_assignments[ship.id]['mission'])
 
+            # I did things this way because of the potential for adding moar
+            # assignment types, this may be changed for efficiency in the near
+            # future
             if myglobals.Variables.current_assignments[ship.id]['mission'] != 'mining' \
                     and myglobals.Variables.current_assignments[ship.id]['mission'] != 'transit' \
                     and myglobals.Variables.current_assignments[ship.id]['mission'] != 'dropoff':
@@ -86,31 +89,35 @@ while True:
 
                 # so yeah, now we incorporate the whether or not to mine/dropoff
                 # block (now in analytics) with new indent levels
-                command_queue.append(analytics.Analyze.can_we_embark_and_start_mining(ship, game_map, me))
+                cmd_n_dest = analytics.Analyze.can_we_embark_and_start_mining(ship, game_map, me)
+                command_queue.append(cmd_n_dest['c_queue_addition'])
+                # the above ^^^ appended command is probably the tuple instead
+                # of proper command string error ;)
 
             else:
-                command_queue.append(game_map.naive_navigate(ship,
-                                                             myglobals.Variables.current_assignments[ship.id]['destination']))
-                continue
+                command_queue.append(ship.move(game_map.naive_navigate(ship,
+                                                                       myglobals.Variables.
+                                                                       current_assignments[ship.id]['destination'])))
+                continue    # is this necessary at this level?
+
+            myglobals.Misc.save_ship_state(ship.id, 'transit', turn, cmd_n_dest['destination'])
 
         except KeyError:
             logging.debug("In KeyError try/except loop")
-
-            # current_assignments[ship.id] = { 'mission': 'transit', 'turnstamp': turn, 'destination': None }
 
             if not ship.is_full:
                 # for testing purposes right now we'll just send out mining no matter what
                 relative_halite = analytics.Analyze.locate_significant_halite(ship, game_map)
                 target = seek_n_nav.FindApproach.target_halite_simple(ship, game_map, relative_halite)
-                # current_assignments[ship.id] = { 'mission': 'transit', # unless right over mining loc (ignoring for now)
-                #                                  'turnstamp': turn, 'destination': target, }
             else:
                 target = seek_n_nav.FindApproach.locate_nearest_base(ship, game_map, me)
-                current_assignments[ship.id] = { 'mission': 'transit', # unless over dropoff, derp
-                                                 'turnstamp': turn, 'destination': target, }
 
             myglobals.Misc.save_ship_state(ship.id, 'transit', turn, target)
-            command_queue.append(game_map.naive_navigate(ship, target))
+            # remember to change 'transit' in the above to something different if the ship is already over the
+            # destination ore deposit, dropoff, or base
+            #command_queue.append(game_map.naive_navigate(ship, target))
+            # this one was a tuple, too ^^^^
+            command_queue.append(ship.move(game_map.naive_navigate(ship, target)))
 
         # d4m0 schitt ends
 

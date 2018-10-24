@@ -53,6 +53,6 @@ class Misc:
         :return:
         """
 
-        Variables.current_assignments[id] = { 'mission': mission, 'turnstamp': turnstamp, 'destination': destination }
+        Variables.current_assignments[id] = { 'mission': mission, 'turnstamp': turnstamp, 'destination': destination, }
 
         return

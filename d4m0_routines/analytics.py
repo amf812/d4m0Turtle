@@ -107,9 +107,8 @@ class Analyze:
             # base only)
             # locate_nearest_base() in analytics will handle this eventually
 
-            c_queue_addition = cur_ship.move(
-                cur_map.naive_navigate(cur_ship,
-                                       seek_n_nav.FindApproach.locate_nearest_base(cur_ship, cur_map, cur_me)))
+            dest = seek_n_nav.FindApproach.locate_nearest_base(cur_ship, cur_map, cur_me)
+            c_queue_addition = cur_ship.move(cur_map.naive_navigate(cur_ship, dest))
 
             # NOTE: docking analogous routine is ship.make_dropoff()
 
@@ -130,11 +129,10 @@ class Analyze:
                 logging.info(" - relative_halite: " + str(
                     sorted(relative_halite, key=itemgetter('quantity'), reverse=True)))
 
-            c_queue_addition = cur_ship.move(cur_map.naive_navigate(cur_ship,
-                                             seek_n_nav.FindApproach.target_halite_simple(
-                                                 cur_ship, cur_map, relative_halite)))
+            dest = seek_n_nav.FindApproach.target_halite_simple(cur_ship, cur_map, relative_halite)
+            c_queue_addition = cur_ship.move(cur_map.naive_navigate(cur_ship, dest))
 
-        return c_queue_addition
+        return { 'c_queue_addition': c_queue_addition, 'destination': dest, }
 
 
 class PerimeterSearch:
