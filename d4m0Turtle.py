@@ -36,7 +36,7 @@ logging.info("Successfully hatched! My Player ID is {}.".format(game.my_id))
 
 # d4m0's init stuff
 turn = 0
-current_assignments = { }
+# current_assignments = { } NOTE: this got moved to myglobals.Variables
 
 """ <<<Game Loop>>> """
 
@@ -74,11 +74,11 @@ while True:
         try:
             if myglobals.Const.DEBUGGING['save_state']:
                 logging.debug("Ship id " + str(ship.id) + " has state set to " +
-                              current_assignments[ship.id]['mission'])
+                              myglobals.Variables.current_assignments[ship.id]['mission'])
 
-            if current_assignments[ship.id]['mission'] != 'mining' \
-                    and current_assignments[ship.id]['mission'] != 'transit' \
-                    and current_assignments[ship.id]['mission'] != 'dropoff':
+            if myglobals.Variables.current_assignments[ship.id]['mission'] != 'mining' \
+                    and myglobals.Variables.current_assignments[ship.id]['mission'] != 'transit' \
+                    and myglobals.Variables.current_assignments[ship.id]['mission'] != 'dropoff':
 
                 # we should be good to send it on its way
                 if myglobals.Const.DEBUGGING['save_state']:
@@ -89,7 +89,8 @@ while True:
                 command_queue.append(analytics.Analyze.can_we_embark_and_start_mining(ship, game_map, me))
 
             else:
-                command_queue.append(game_map.naive_navigate(ship, current_assignments[ship.id]['destination']))
+                command_queue.append(game_map.naive_navigate(ship,
+                                                             myglobals.Variables.current_assignments[ship.id]['destination']))
                 continue
 
         except KeyError:
@@ -101,16 +102,15 @@ while True:
                 # for testing purposes right now we'll just send out mining no matter what
                 relative_halite = analytics.Analyze.locate_significant_halite(ship, game_map)
                 target = seek_n_nav.FindApproach.target_halite_simple(ship, game_map, relative_halite)
-                current_assignments[ship.id] = { 'mission': 'transit', # unless right over mining loc (ignoring for now)
-                                                 'turnstamp': turn, 'destination': target, }
-
-                command_queue.append(game_map.naive_navigate(ship, target))
+                # current_assignments[ship.id] = { 'mission': 'transit', # unless right over mining loc (ignoring for now)
+                #                                  'turnstamp': turn, 'destination': target, }
             else:
                 target = seek_n_nav.FindApproach.locate_nearest_base(ship, game_map, me)
                 current_assignments[ship.id] = { 'mission': 'transit', # unless over dropoff, derp
                                                  'turnstamp': turn, 'destination': target, }
 
-                command_queue.append(game_map.naive_navigate(ship, target))
+            myglobals.Misc.save_ship_state(ship.id, 'transit', turn, target)
+            command_queue.append(game_map.naive_navigate(ship, target))
 
         # d4m0 schitt ends
 
