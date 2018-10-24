@@ -76,10 +76,20 @@ while True:
                 logging.debug("Ship id " + str(ship.id) + " has state set to " +
                               myglobals.Variables.current_assignments[ship.id]['mission'])
 
+            # have we been a ramblin'?
+            if ((turn - myglobals.Variables.current_assignments[ship.id]['turnstamp']) >
+                (myglobals.Const.Maximal_Consideration_Distance * 2)):
+                # been traveling too long; time to select a new destination/mission
+                cmd_n_dest = analytics.Analyze.can_we_embark_and_start_mining(ship, game_map, me)
+                command_queue.append(cmd_n_dest['c_queue_addition'])
+                myglobals.Misc.save_ship_state(ship.id, 'transit', turn, cmd_n_dest['destination'])
+                # NOTE: these 3 blocks are used at least twice below, also;
+                # BREAK IT UP
+
             # I did things this way because of the potential for adding moar
             # assignment types, this may be changed for efficiency in the near
             # future
-            if myglobals.Variables.current_assignments[ship.id]['mission'] != 'mining' \
+            elif myglobals.Variables.current_assignments[ship.id]['mission'] != 'mining' \
                     and myglobals.Variables.current_assignments[ship.id]['mission'] != 'transit' \
                     and myglobals.Variables.current_assignments[ship.id]['mission'] != 'dropoff':
 
@@ -94,13 +104,34 @@ while True:
                 # the above ^^^ appended command is probably the tuple instead
                 # of proper command string error ;)
 
+                myglobals.Misc.save_ship_state(ship.id, 'transit', turn, cmd_n_dest['destination'])
+
+            elif myglobals.Variables.current_assignments[ship.id]['mission'] == 'transit':
+                # are we at our destination yet?
+                if ship.position == myglobals.Variables.current_assignments[ship.id]['destination']:
+                    # switch to mining or dropoff
+                    if game_map[ship.position].has_structure:
+                        myglobals.Misc.save_ship_state(ship.id, 'dropoff', turn, ship.position)
+                        command_queue.append(ship.make_dropoff())
+                    elif game_map[ship.position].halite_amount > 0:
+                        #gotta make sure there's still halite here, too
+                        myglobals.Misc.save_ship_state(ship.id, 'mining', turn, ship.position)
+                        command_queue.append(ship.stay_still())   # collect that halite
+                    else:
+                        #we need to pick somewhere else to go
+                        cmd_n_dest = analytics.Analyze.can_we_embark_and_start_mining(ship, game_map, me)
+                        command_queue.append(cmd_n_dest['c_queue_addition'])
+                        myglobals.Misc.save_ship_state(ship.id, 'transit', turn, cmd_n_dest['destination'])
+                        #NOTE: same 3 lines of code as above the [outer] 'elif'
+                        #statement; where can we put this to avoid dupe coad?
             else:
                 command_queue.append(ship.move(game_map.naive_navigate(ship,
                                                                        myglobals.Variables.
                                                                        current_assignments[ship.id]['destination'])))
-                continue    # is this necessary at this level?
 
-            myglobals.Misc.save_ship_state(ship.id, 'transit', turn, cmd_n_dest['destination'])
+                myglobals.Misc.save_ship_state(ship.id, 'transit', turn,
+                                               myglobals.Variables.current_assignments[ship.id]['destination'])
+                #continue    # is this necessary at this level?
 
         except KeyError:
             logging.debug("In KeyError try/except loop")
