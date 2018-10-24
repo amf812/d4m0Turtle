@@ -30,7 +30,11 @@ class FindApproach:
         # for now we're just going to leave this as a stub that'll return the
         # first base, since I just want this active for testing purposes now
         # that it's time to try out the ore's perimeter search
-        return myself.get_dropoff()
+        try:
+            return myself.get_dropoffs()[0].position
+
+        except IndexError:
+            return myself.shipyard.position
 
     @staticmethod
     def target_halite_simple(current_turtle, current_map, halite):

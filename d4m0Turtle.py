@@ -79,12 +79,18 @@ while True:
             # have we been a ramblin'?
             if ((turn - myglobals.Variables.current_assignments[ship.id]['turnstamp']) >
                 (myglobals.Const.Maximal_Consideration_Distance * 2)):
+                if myglobals.Const.DEBUGGING['seek'] or myglobals.Const.DEBUGGING['mine'] or \
+                    myglobals.Const.DEBUGGING['dropoff']:
+                    logging.debug(" - seeking new ore or dropoff due to mission time elapsed in transit - ")
+
                 # been traveling too long; time to select a new destination/mission
                 cmd_n_dest = analytics.Analyze.can_we_embark_and_start_mining(ship, game_map, me)
                 command_queue.append(cmd_n_dest['c_queue_addition'])
                 myglobals.Misc.save_ship_state(ship.id, 'transit', turn, cmd_n_dest['destination'])
                 # NOTE: these 3 blocks are used at least twice below, also;
                 # BREAK IT UP
+                if myglobals.Const.DEBUGGING['save_state']:
+                    logging.debug(" - updated former transit state to transit: " + str(cmd_n_dest['destination']))
 
             # I did things this way because of the potential for adding moar
             # assignment types, this may be changed for efficiency in the near
@@ -113,18 +119,26 @@ while True:
                     if game_map[ship.position].has_structure:
                         myglobals.Misc.save_ship_state(ship.id, 'dropoff', turn, ship.position)
                         command_queue.append(ship.make_dropoff())
+                        if myglobals.Const.DEBUGGING['save_state'] or myglobals.Const.DEBUGGING['dropoff']:
+                            logging.debug(" - changed mission to dropoff @ " + str(ship.position))
                     elif game_map[ship.position].halite_amount > 0:
-                        #gotta make sure there's still halite here, too
+                        # gotta make sure there's still halite here, too
                         myglobals.Misc.save_ship_state(ship.id, 'mining', turn, ship.position)
                         command_queue.append(ship.stay_still())   # collect that halite
+                        if myglobals.Const.DEBUGGING['save_state'] or myglobals.Const.DEBUGGING['mining']:
+                            logging.debug(" - changed mission to mining @ " + str(ship.position))
                     else:
-                        #we need to pick somewhere else to go
+                        # we need to pick somewhere else to go - it's been stripped
                         cmd_n_dest = analytics.Analyze.can_we_embark_and_start_mining(ship, game_map, me)
                         command_queue.append(cmd_n_dest['c_queue_addition'])
                         myglobals.Misc.save_ship_state(ship.id, 'transit', turn, cmd_n_dest['destination'])
-                        #NOTE: same 3 lines of code as above the [outer] 'elif'
-                        #statement; where can we put this to avoid dupe coad?
-            else:
+                        # NOTE: same 3 lines of code as above the [outer] 'elif'
+                        # statement; where can we put this to avoid dupe coad?
+
+                        if myglobals.Const.DEBUGGING['save_state']:
+                            logging.debug(" - this area is stripped - in transit to new target: " +
+                                          str(cmd_n_dest['destination']))
+            else:   # we must be set for dropoff; check and make sure that we're done nao
                 command_queue.append(ship.move(game_map.naive_navigate(ship,
                                                                        myglobals.Variables.
                                                                        current_assignments[ship.id]['destination'])))
@@ -158,15 +172,6 @@ while True:
         #    command_queue.append(
         #        ship.move(
         #            random.choice([ Direction.North, Direction.South, Direction.East, Direction.West ])))
-        #else:
-        #indent the command below to recover this functionality when the hlt.constants shit is fixed
-        #the conditional bit and north movement is d4m0 schitt; just the stay_still() was original
-        #if turn >= 3:
-        #    command_queue.append(ship.stay_still())
-        #    logging.info("queued command for the ship to stay still")
-        #else:
-        #    command_queue.append(ship.move(Direction.North))
-        #    logging.info("queued command for the ship to move north (1st turn)")
 
     # If the game is in the first 200 turns and you have enough halite, spawn a ship.
     # Don't spawn a ship if you currently have a ship at port, though - the ships will collide.
