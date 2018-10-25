@@ -20,7 +20,7 @@ import hlt
 import logging
 
 # d4m0 imports
-from d4m0_routines import analytics, seek_n_nav, myglobals
+from d4m0_routines import analytics, seek_n_nav, myglobals, primary
 
 """ <<<Game Begin>>> """
 
@@ -32,85 +32,70 @@ game.ready("D4m0Turtle")
 
 # Now that your bot is initialized, save a message to yourself in the log file with some important information.
 #   Here, you log here your id, which you can always fetch from the game object by using my_id.
-logging.info("Successfully hatched! My Player ID is {}.".format(game.my_id))
+myglobals.Misc.loggit('any', 'info', "Successfully hatched! My Player ID is {}.".format(game.my_id))
 
 # d4m0's init stuff
 turn = 0
-# current_assignments = { } NOTE: this got moved to myglobals.Variables
 
 """ <<<Game Loop>>> """
 
 while True:
-    # This loop handles each turn of the game. The game object changes every turn, and you refresh that state by
-    #   running update_frame().
-    if myglobals.Const.DEBUGGING['core']:
-        logging.info("-init-")
-        logging.info(" - updating frame")
-
+    myglobals.Misc.loggit('core', 'info', " - updating frame")
     game.update_frame()
 
-    if myglobals.Const.DEBUGGING['core']:
-        logging.info(" - updating 'me'")
+    myglobals.Misc.loggit('core', 'info', " - updating 'me'")
     # keeps things speedier
     me = game.me
 
-    if myglobals.Const.DEBUGGING['core']:
-        logging.info(" - updating 'game_map'")
+    myglobals.Misc.loggit('core', 'info', " - updating 'game_map'")
     # speed, again (see if there are any places to implement anything like
     # this with my own structs)
     game_map = game.game_map
 
-    if myglobals.Const.DEBUGGING['core']:
-        logging.info(" - initializing 'command_queue'")
+    myglobals.Misc.loggit('core', 'info', " - initializing 'command_queue'")
     command_queue = []
 
-    if myglobals.Const.DEBUGGING['core']:
-        logging.info("me.get_ships() dump: " + str(me.get_ships()))
+    myglobals.Misc.loggit('core', 'debug', " -* me.get_ships() dump: " + str(me.get_ships()))
 
     for ship in me.get_ships():
         # d4m0 schitt starts
 
         # is this ship already in transit to mine?
         try:
-            if myglobals.Const.DEBUGGING['save_state']:
-                logging.debug("Ship id " + str(ship.id) + " has state set to " +
-                              myglobals.Variables.current_assignments[ship.id]['mission'])
+            if myglobals.Variables.current_assignments[ship.id] and myglobals.Const.DEBUGGING['core']:
+                logging.debug(" Determining status of ship " + str(ship.id))
+
+            myglobals.Misc.loggit('save_state', 'debug', "  - ship id: " + str(ship.id) + " has state set to " +
+                                  myglobals.Variables.current_assignments[ship.id]['mission'])
 
             # have we been a ramblin'?
-            if ((turn - myglobals.Variables.current_assignments[ship.id]['turnstamp']) >
-                (myglobals.Const.Maximal_Consideration_Distance * 2)):
-                if myglobals.Const.DEBUGGING['seek'] or myglobals.Const.DEBUGGING['mine'] or \
-                    myglobals.Const.DEBUGGING['dropoff']:
-                    logging.debug(" - seeking new ore or dropoff due to mission time elapsed in transit - ")
-
-                # been traveling too long; time to select a new destination/mission
-                cmd_n_dest = analytics.Analyze.can_we_embark_and_start_mining(ship, game_map, me)
-                command_queue.append(cmd_n_dest['c_queue_addition'])
-                myglobals.Misc.save_ship_state(ship.id, 'transit', turn, cmd_n_dest['destination'])
-                # NOTE: these 3 blocks are used at least twice below, also;
-                # BREAK IT UP
-                if myglobals.Const.DEBUGGING['save_state']:
-                    logging.debug(" - updated former transit state to transit: " + str(cmd_n_dest['destination']))
+            potential_cmd = primary.Core.has_transit_been_too_long(turn, ship)
+            if potential_cmd:
+                command_queue.append(potential_cmd)
+                continue
 
             # I did things this way because of the potential for adding moar
             # assignment types, this may be changed for efficiency in the near
             # future
-            elif myglobals.Variables.current_assignments[ship.id]['mission'] != 'mining' \
+            if myglobals.Variables.current_assignments[ship.id]['mission'] != 'mining' \
                     and myglobals.Variables.current_assignments[ship.id]['mission'] != 'transit' \
                     and myglobals.Variables.current_assignments[ship.id]['mission'] != 'dropoff':
 
                 # we should be good to send it on its way
-                if myglobals.Const.DEBUGGING['save_state']:
-                    logging.info("Found ship " + str(ship.id) + " ready for mission.")
+                if myglobals.Const.DEBUGGING['save_state'] or myglobals.Const.DEBUGGING['core']:
+                    logging.info(" Ship id: " + str(ship.id) + " ready for mission.")
 
                 # so yeah, now we incorporate the whether or not to mine/dropoff
                 # block (now in analytics) with new indent levels
                 cmd_n_dest = analytics.Analyze.can_we_embark_and_start_mining(ship, game_map, me)
                 command_queue.append(cmd_n_dest['c_queue_addition'])
-                # the above ^^^ appended command is probably the tuple instead
-                # of proper command string error ;)
 
                 myglobals.Misc.save_ship_state(ship.id, 'transit', turn, cmd_n_dest['destination'])
+
+                if myglobals.Const.DEBUGGING['save_state'] or myglobals.Const.DEBUGGING['core']:
+                    logging.debug(" - updated former unset state to new transit: " + str(cmd_n_dest['destination']))
+
+                RESUME ADDING LOGGING BELOW
 
             elif myglobals.Variables.current_assignments[ship.id]['mission'] == 'transit':
                 # are we at our destination yet?

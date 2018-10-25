@@ -7,6 +7,7 @@ anyway)
 Holds debugging and other constant values
 """
 
+import logging
 import hlt
 from hlt import constants
 
@@ -54,5 +55,31 @@ class Misc:
         """
 
         Variables.current_assignments[id] = { 'mission': mission, 'turnstamp': turnstamp, 'destination': destination, }
+
+        return
+
+    @staticmethod
+    def loggit(debugging_type, log_level, log_message):
+        """
+        I've got to say, I'm getting pretty sick of having to type in the
+        whole if myglobals.Const.DEBUGGING['blah']: and logging() bits every
+        time that I need to throw something into the log.  While this method
+        won't be suitable for logging based on multiple Const.DEBUGGING flags,
+        most of the ones I'm using are based on a single flag, so this will
+        make things a lot easier for adding more, code maintainability, etc.
+
+        :param debugging_type: see Const.DEBUGGING flags ('any' also works)
+        :param log_level: debug, info, and any are implemented so far
+        :param log_message: message to throw into the log @ log_level
+        :return:
+        """
+
+        if Const.DEBUGGING[debugging_type] or debugging_type == 'any':
+            if log_level == 'debug' or log_level == 'any':
+                logging.debug(log_message)
+            elif log_level == 'info' or log_level == 'any':
+                logging.info(log_message)
+            else:
+                raise RuntimeError("Log level specified is not implemented in myglobals.Misc.loggit()")
 
         return
