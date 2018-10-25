@@ -143,7 +143,8 @@ while True:
 
     # If the game is in the first 200 turns and you have enough halite, spawn a ship.
     # Don't spawn a ship if you currently have a ship at port, though - the ships will collide.
-    if game.turn_number <= 200 and me.halite_amount >= 1000 and not game_map[me.shipyard].is_occupied:
+    if (game.turn_number <= 200) and (me.halite_amount > myglobals.Const.Enough_Ore_To_Spawn) and \
+            (not game_map[me.shipyard].is_occupied):
         command_queue.append(me.shipyard.spawn())
 
     # d4m0 end of turn schitt

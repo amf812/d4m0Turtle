@@ -27,8 +27,9 @@ class Core:
         :param me:
         :return: c_queue_addition or False
         """
+
         if ((turn - myglobals.Variables.current_assignments[ship.id]['turnstamp']) >
-                (myglobals.Const.Maximal_Consideration_Distance * 3)):
+                (myglobals.Const.Maximal_Consideration_Distance * myglobals.Const.Traveling_Too_long)):
             if (myglobals.Const.DEBUGGING['seek'] or myglobals.Const.DEBUGGING['mine'] or
                myglobals.Const.DEBUGGING['dropoff']) or myglobals.Const.DEBUGGING['core']:
                 logging.debug("  - seeking new ore or dropoff due to mission time elapsed in transit - ")
