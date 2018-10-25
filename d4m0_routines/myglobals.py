@@ -74,7 +74,7 @@ class Misc:
         :return:
         """
 
-        if Const.DEBUGGING[debugging_type] or debugging_type == 'any':
+        if debugging_type == 'any' or Const.DEBUGGING[debugging_type]:
             if log_level == 'debug' or log_level == 'any':
                 logging.debug(log_message)
             elif log_level == 'info' or log_level == 'any':

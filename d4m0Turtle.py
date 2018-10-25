@@ -62,6 +62,7 @@ while True:
 
         # is this ship already in transit to mine?
         try:
+            #everything at this block level has already had mission assigned
             if myglobals.Variables.current_assignments[ship.id] and myglobals.Const.DEBUGGING['core']:
                 logging.debug(" Determining status of ship " + str(ship.id))
 
@@ -69,7 +70,10 @@ while True:
                                   myglobals.Variables.current_assignments[ship.id]['mission'])
 
             # have we been a ramblin'?
-            potential_cmd = primary.Core.has_transit_been_too_long(turn, ship)
+            potential_cmd = primary.Core.has_transit_been_too_long(turn, ship, game_map, me)
+            # I believe the following 3 lines will be duplicated thrice, and
+            # can just come after the branching schitt, as all will return a
+            # valid potential_cmd to test + append if necessary
             if potential_cmd:
                 command_queue.append(potential_cmd)
                 continue
@@ -77,60 +81,39 @@ while True:
             # I did things this way because of the potential for adding moar
             # assignment types, this may be changed for efficiency in the near
             # future
-            if myglobals.Variables.current_assignments[ship.id]['mission'] != 'mining' \
-                    and myglobals.Variables.current_assignments[ship.id]['mission'] != 'transit' \
-                    and myglobals.Variables.current_assignments[ship.id]['mission'] != 'dropoff':
+            # so what the fsck is it supposed to ACTUALLY DO? - not sure, so
+            # it's just getting commented out for now
+            #elif myglobals.Variables.current_assignments[ship.id]['mission'] != 'mining' \
+            #        and myglobals.Variables.current_assignments[ship.id]['mission'] != 'transit' \
+            #        and myglobals.Variables.current_assignments[ship.id]['mission'] != 'dropoff':
 
-                # we should be good to send it on its way
-                if myglobals.Const.DEBUGGING['save_state'] or myglobals.Const.DEBUGGING['core']:
-                    logging.info(" Ship id: " + str(ship.id) + " ready for mission.")
+            #    # we should be good to send it on its way
+            #    if myglobals.Const.DEBUGGING['save_state'] or myglobals.Const.DEBUGGING['core']:
+            #        logging.info("  - Ship id: " + str(ship.id) + "  ready for mission.")
 
-                # so yeah, now we incorporate the whether or not to mine/dropoff
-                # block (now in analytics) with new indent levels
-                cmd_n_dest = analytics.Analyze.can_we_embark_and_start_mining(ship, game_map, me)
-                command_queue.append(cmd_n_dest['c_queue_addition'])
+            #    # so yeah, now we incorporate the whether or not to mine/dropoff
+            #    # block (now in analytics) with new indent levels
+            #    cmd_n_dest = analytics.Analyze.can_we_embark_and_start_mining(ship, game_map, me)
+            #    command_queue.append(cmd_n_dest['c_queue_addition'])
 
-                myglobals.Misc.save_ship_state(ship.id, 'transit', turn, cmd_n_dest['destination'])
+            #    myglobals.Misc.save_ship_state(ship.id, 'transit', turn, cmd_n_dest['destination'])
 
-                if myglobals.Const.DEBUGGING['save_state'] or myglobals.Const.DEBUGGING['core']:
-                    logging.debug(" - updated former unset state to new transit: " + str(cmd_n_dest['destination']))
-
-                RESUME ADDING LOGGING BELOW
+            #    if myglobals.Const.DEBUGGING['save_state'] or myglobals.Const.DEBUGGING['core']:
+            #        logging.debug(" - updated former unset state to new transit: " + str(cmd_n_dest['destination']))
 
             elif myglobals.Variables.current_assignments[ship.id]['mission'] == 'transit':
-                # are we at our destination yet?
-                if ship.position == myglobals.Variables.current_assignments[ship.id]['destination']:
-                    # switch to mining or dropoff
-                    if game_map[ship.position].has_structure:
-                        myglobals.Misc.save_ship_state(ship.id, 'dropoff', turn, ship.position)
-                        command_queue.append(ship.make_dropoff())
-                        if myglobals.Const.DEBUGGING['save_state'] or myglobals.Const.DEBUGGING['dropoff']:
-                            logging.debug(" - changed mission to dropoff @ " + str(ship.position))
-                    elif game_map[ship.position].halite_amount > 0:
-                        # gotta make sure there's still halite here, too
-                        myglobals.Misc.save_ship_state(ship.id, 'mining', turn, ship.position)
-                        command_queue.append(ship.stay_still())   # collect that halite
-                        if myglobals.Const.DEBUGGING['save_state'] or myglobals.Const.DEBUGGING['mining']:
-                            logging.debug(" - changed mission to mining @ " + str(ship.position))
-                    else:
-                        # we need to pick somewhere else to go - it's been stripped
-                        cmd_n_dest = analytics.Analyze.can_we_embark_and_start_mining(ship, game_map, me)
-                        command_queue.append(cmd_n_dest['c_queue_addition'])
-                        myglobals.Misc.save_ship_state(ship.id, 'transit', turn, cmd_n_dest['destination'])
-                        # NOTE: same 3 lines of code as above the [outer] 'elif'
-                        # statement; where can we put this to avoid dupe coad?
-
-                        if myglobals.Const.DEBUGGING['save_state']:
-                            logging.debug(" - this area is stripped - in transit to new target: " +
-                                          str(cmd_n_dest['destination']))
+                potential_cmd = primary.Core.transit_processing_done_or_not(ship, game_map, turn, me)
+                if potential_cmd:
+                    command_queue.append(potential_cmd)
+                    continue
             else:   # we must be set for dropoff; check and make sure that we're done nao
+                myglobals.Misc.loggit('core', 'info', "  - in transit to: " +
+                                      str(myglobals.Variables.current_assignments[ship.id]['destination']))
                 command_queue.append(ship.move(game_map.naive_navigate(ship,
                                                                        myglobals.Variables.
                                                                        current_assignments[ship.id]['destination'])))
-
                 myglobals.Misc.save_ship_state(ship.id, 'transit', turn,
                                                myglobals.Variables.current_assignments[ship.id]['destination'])
-                #continue    # is this necessary at this level?
 
         except KeyError:
             logging.debug("In KeyError try/except loop")
