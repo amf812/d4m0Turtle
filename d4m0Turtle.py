@@ -16,8 +16,10 @@ the best level they can be (at least in py3).
 
 # Import the Halite SDK, which will let you interact with the game.
 import hlt
-
+import random
 import logging
+
+from hlt import Position, Direction
 
 # d4m0 imports
 from d4m0_routines import analytics, seek_n_nav, myglobals, primary
@@ -69,15 +71,6 @@ while True:
             myglobals.Misc.loggit('save_state', 'debug', "  - ship id: " + str(ship.id) + " has state set to " +
                                   myglobals.Variables.current_assignments[ship.id]['mission'])
 
-            # have we been a ramblin'?
-            potential_cmd = primary.Core.has_transit_been_too_long(turn, ship, game_map, me)
-            # I believe the following 3 lines will be duplicated thrice, and
-            # can just come after the branching schitt, as all will return a
-            # valid potential_cmd to test + append if necessary
-            if potential_cmd:
-                command_queue.append(potential_cmd)
-                continue
-
             # I did things this way because of the potential for adding moar
             # assignment types, this may be changed for efficiency in the near
             # future
@@ -101,11 +94,28 @@ while True:
             #    if myglobals.Const.DEBUGGING['save_state'] or myglobals.Const.DEBUGGING['core']:
             #        logging.debug(" - updated former unset state to new transit: " + str(cmd_n_dest['destination']))
 
-            elif myglobals.Variables.current_assignments[ship.id]['mission'] == 'transit':
-                potential_cmd = primary.Core.transit_processing_done_or_not(ship, game_map, turn, me)
+            if myglobals.Variables.current_assignments[ship.id]['mission'] == 'transit':
+                # have we been a ramblin'?
+                potential_cmd = primary.Core.has_transit_been_too_long(turn, ship, game_map, me)
+                if not potential_cmd:
+                    potential_cmd = primary.Core.transit_processing_done_or_not(ship, game_map, turn, me)
+
                 if potential_cmd:
                     command_queue.append(potential_cmd)
                     continue
+            elif myglobals.Variables.current_assignments[ship.id]['mission'] == 'get_minimum_distance':
+                if ship.position == myglobals.Variables.current_assignments[ship.id]['destination']:
+                    #we're here, now seek out the best halite
+
+                elif (turn - myglobals.Variables.current_assignments[ship.id]['turn']) < \
+                        (myglobals.Const.Maximal_Consideration_Distance * 2):
+                    #continue minimum distance transit
+                    command_queue.append(ship.move(game_map.
+                                                   naive_navigate(ship, myglobals.Variables.
+                                                                        current_assignments[ship.id]['destination'])))
+                else:
+                    #we've been ramblin' too long, just look for the halite now
+                    
             else:   # we must be set for dropoff; check and make sure that we're done nao
                 myglobals.Misc.loggit('core', 'info', "  - in transit to: " +
                                       str(myglobals.Variables.current_assignments[ship.id]['destination']))
@@ -118,18 +128,21 @@ while True:
         except KeyError:
             logging.debug("In KeyError try/except loop")
 
-            if not ship.is_full:
-                # for testing purposes right now we'll just send out mining no matter what
-                relative_halite = analytics.Analyze.locate_significant_halite(ship, game_map)
-                target = seek_n_nav.FindApproach.target_halite_simple(ship, game_map, relative_halite)
+            if not ship.is_full:    # if nothing is set, this should ALWAYS be the case
+                # for testing purposes right now we'll just send out mining no matter what;
+                # but first, we need to get to a minimum distance away
+                target = ship.position
+                rdir = random.choice([ Direction.North, Direction.South, Direction.East, Direction.West ])
+                for cntr in range(0, myglobals.Const.Maximal_Consideration_Distance):
+                    target = Position(target).directional_offset(rdir)
+
+                myglobals.Misc.save_ship_state(ship.id, 'get_minimum_distance', turn, target)
+                #relative_halite = analytics.Analyze.locate_significant_halite(ship, game_map)
+                #target = seek_n_nav.FindApproach.target_halite_simple(ship, game_map, relative_halite)
             else:
                 target = seek_n_nav.FindApproach.locate_nearest_base(ship, game_map, me)
+                myglobals.Misc.save_ship_state(ship.id, 'transit', turn, target)
 
-            myglobals.Misc.save_ship_state(ship.id, 'transit', turn, target)
-            # remember to change 'transit' in the above to something different if the ship is already over the
-            # destination ore deposit, dropoff, or base
-            #command_queue.append(game_map.naive_navigate(ship, target))
-            # this one was a tuple, too ^^^^
             command_queue.append(ship.move(game_map.naive_navigate(ship, target)))
 
         # d4m0 schitt ends
