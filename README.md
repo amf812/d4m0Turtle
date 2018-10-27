@@ -26,5 +26,10 @@ Holds all of my particular different libraries for usage from within **d4m0Turtl
 
 #### seek-n-nav
 
->>>>>>> develop
 
+
+#### myglobals
+
+
+
+#### primary

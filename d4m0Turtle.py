@@ -96,26 +96,47 @@ while True:
 
             if myglobals.Variables.current_assignments[ship.id]['mission'] == 'transit':
                 # have we been a ramblin'?
+                myglobals.Misc.loggit('core', 'debug', "  - checking to see if ship id: " + str(ship.id) +
+                                      " has been a ramblin' man...")
                 potential_cmd = primary.Core.has_transit_been_too_long(turn, ship, game_map, me)
                 if not potential_cmd:
+                    myglobals.Misc.loggit('core', 'debug', "  - * it has not, continuing transit")  #is this right?
                     potential_cmd = primary.Core.transit_processing_done_or_not(ship, game_map, turn, me)
 
                 if potential_cmd:
-                    command_queue.append(potential_cmd)
-                    continue
+                    myglobals.Misc.loggit('core', 'debug', "  - * it has been ramblin'; new destination: " +
+                                          str(potential_cmd['destination']))
+
+                command_queue.append(potential_cmd)
+                continue
             elif myglobals.Variables.current_assignments[ship.id]['mission'] == 'get_minimum_distance':
                 if ship.position == myglobals.Variables.current_assignments[ship.id]['destination']:
                     #we're here, now seek out the best halite
+                    myglobals.Misc.loggit('core', 'debug', "  - ship id: " + str(ship.id) + " at min distance; " +
+                                          "seeking halite ore now")
+                    # at some point this will need to include searching other
+                    # ships' current_assignments to verify there will be no
+                    # conflict in destination to avoid pointless transit
+                    dest = analytics.Analyze.locate_significant_halite(ship, game_map)[0]['destination']
+                    myglobals.Misc.save_ship_state(ship.id, 'seek', turn, dest)
+                    myglobals.Misc.loggit('seek-n-nav', 'debug', "  - * found halite @ " + str(dest))
 
                 elif (turn - myglobals.Variables.current_assignments[ship.id]['turn']) < \
                         (myglobals.Const.Maximal_Consideration_Distance * 2):
                     #continue minimum distance transit
+                    myglobals.Misc.loggit('core', 'debug', "  - ship id: " + str(ship.id) + " continuing transit to " +
+                                          str(myglobals.Variables.current_assignments[ship.id]['destination']))
                     command_queue.append(ship.move(game_map.
                                                    naive_navigate(ship, myglobals.Variables.
                                                                         current_assignments[ship.id]['destination'])))
                 else:
                     #we've been ramblin' too long, just look for the halite now
-                    
+                    dest = analytics.Analyze.locate_significant_halite(ship, game_map)[0]['destination']
+                    myglobals.Misc.save_ship_state(ship.id, 'transit', turn, dest)
+                    myglobals.Misc.loggit('seek-n-nave', 'debug', " - ship id: " + str(ship.id) +
+                                          " ramblin' too long, transit to: " + str(dest) + " initiated")
+                    command_queue.append(ship.move(game_map.naive_navigate(ship, dest)))
+
             else:   # we must be set for dropoff; check and make sure that we're done nao
                 myglobals.Misc.loggit('core', 'info', "  - in transit to: " +
                                       str(myglobals.Variables.current_assignments[ship.id]['destination']))
@@ -134,7 +155,7 @@ while True:
                 target = ship.position
                 rdir = random.choice([ Direction.North, Direction.South, Direction.East, Direction.West ])
                 for cntr in range(0, myglobals.Const.Maximal_Consideration_Distance):
-                    target = Position(target).directional_offset(rdir)
+                    target = target.directional_offset(rdir)
 
                 myglobals.Misc.save_ship_state(ship.id, 'get_minimum_distance', turn, target)
                 #relative_halite = analytics.Analyze.locate_significant_halite(ship, game_map)
