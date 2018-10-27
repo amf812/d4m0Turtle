@@ -14,7 +14,7 @@ from hlt import constants
 
 class Const:
     DEBUGGING = {
-        'core': False,
+        'core': True,
         'seek': True,
         'locate_ore': True,
         'perimeter_search': True,

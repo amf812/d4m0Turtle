@@ -18,6 +18,8 @@ the best level they can be (at least in py3).
 import hlt
 import random
 import logging
+import traceback
+import sys
 
 from hlt import Position, Direction
 
@@ -64,8 +66,12 @@ while True:
 
         # is this ship already in transit to mine?
         try:
-            #everything at this block level has already had mission assigned
-            if myglobals.Variables.current_assignments[ship.id] and myglobals.Const.DEBUGGING['core']:
+            # keep debugging information to track down the line # of issues here
+            #if myglobals.Const.DEBUGGING['core']:
+            #    exc_info = sys.exc_info();
+
+            # everything at this block level has already had mission assigned
+            if myglobals.Variables.current_assignments[ship.id]['mission'] and myglobals.Const.DEBUGGING['core']:
                 logging.debug(" Determining status of ship " + str(ship.id))
 
             myglobals.Misc.loggit('save_state', 'debug', "  - ship id: " + str(ship.id) + " has state set to " +
@@ -101,7 +107,7 @@ while True:
                 potential_cmd = primary.Core.has_transit_been_too_long(turn, ship, game_map, me)
                 if not potential_cmd:
                     myglobals.Misc.loggit('core', 'debug', "  - * it has not, continuing transit")  #is this right?
-                    potential_cmd = primary.Core.transit_processing_done_or_not(ship, game_map, turn, me)
+                    potential_cmd = primary.Core.transit_processing_done_or_not(turn, ship, game_map, me)
 
                 if potential_cmd:
                     myglobals.Misc.loggit('core', 'debug', "  - * it has been ramblin'; new destination: " +
@@ -110,7 +116,7 @@ while True:
                 command_queue.append(potential_cmd)
                 continue
             elif myglobals.Variables.current_assignments[ship.id]['mission'] == 'get_minimum_distance':
-                command_queue.append(primary.Core.minimum_distance_processing(ship, game_map, turn, me))
+                command_queue.append(primary.Core.minimum_distance_processing(turn, ship, game_map, me))
 
             else:   # we must be set for dropoff; check and make sure that we're done nao
                 myglobals.Misc.loggit('core', 'info', "  - in transit to: " +
@@ -121,8 +127,8 @@ while True:
                 myglobals.Misc.save_ship_state(ship.id, 'transit', turn,
                                                myglobals.Variables.current_assignments[ship.id]['destination'])
 
-        except KeyError:
-            logging.debug("In KeyError try/except loop")
+        except KeyError as ke:
+            logging.debug("In KeyError try/except loop: " + str(ke.__traceback__))
 
             if not ship.is_full:    # if nothing is set, this should ALWAYS be the case
                 # for testing purposes right now we'll just send out mining no matter what;
@@ -144,6 +150,12 @@ while True:
                                       "here, but now we're heading to " + str(target) + " for dropoff after transit")
 
             command_queue.append(ship.move(game_map.naive_navigate(ship, target)))
+
+        #finally:
+            #if myglobals.Const.DEBUGGING['core']:
+            #    myglobals.Misc.loggit('core', 'debug', "   - stack trace: " + traceback.print_exception(*exc_info))
+
+            #del exc_info
 
         # d4m0 schitt ends
 

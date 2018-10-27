@@ -47,7 +47,7 @@ class Core:
             return False
 
     @staticmethod
-    def transit_processing_done_or_not(ship, game_map, turn, me):
+    def transit_processing_done_or_not(turn, ship, game_map, me):
         """
         checks to see if the ship in transit has made it to its destination
         Position yet; if so, it changes its mission and starts it dropping
@@ -87,7 +87,7 @@ class Core:
             return False
 
     @staticmethod
-    def minimum_distance_processing(ship, game_map, turn, me):
+    def minimum_distance_processing(turn, ship, game_map, me):
         """
         processing if a ship is still trying to get minimum_distance away
         from the shipyard
