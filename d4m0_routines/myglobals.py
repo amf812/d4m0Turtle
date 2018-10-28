@@ -25,7 +25,7 @@ class Const:
     # Worth_Mining_Halite = int(constants.MAX_HALITE * 0.2)
     Maximal_Consideration_Distance = 5
     Enough_Ore_To_Spawn = 2000
-    Traveling_Too_long = 5  #this times Maximal_Consideration_Distance is the
+    Traveling_Too_Long = 5  #this times Maximal_Consideration_Distance is the
     # limit for number of turns to get to the destination
 
 

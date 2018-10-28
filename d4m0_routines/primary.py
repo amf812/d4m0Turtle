@@ -12,6 +12,7 @@ from . import myglobals, analytics
 
 import logging
 
+
 class Core:
     @staticmethod
     def has_transit_been_too_long(turn, ship, game_map, me):
@@ -51,7 +52,8 @@ class Core:
         """
         checks to see if the ship in transit has made it to its destination
         Position yet; if so, it changes its mission and starts it dropping
-        halite or mining, etc
+        halite or mining, etc.  this is a complete duplicate of the method
+        above, 'has_transit_been_too_long()', isn't it?
 
         :param ship:
         :param game_map:
@@ -87,7 +89,7 @@ class Core:
             return False
 
     @staticmethod
-    def minimum_distance_processing(turn, ship, game_map, me):
+    def minimum_distance_processing(turn, ship, game_map):
         """
         processing if a ship is still trying to get minimum_distance away
         from the shipyard
@@ -127,3 +129,26 @@ class Core:
             c_queue = ship.move(game_map.naive_navigate(ship, dest))
 
         return c_queue
+
+    @staticmethod
+    def check_for_too_long_initial_transit(turn, ship, game_map, me):
+        """
+        check whether or not the ship has been in transit for too long; I've
+        got to say that I'm pretty sure that this method is a 3rd duplication
+        of the initial has_transit_been_too_long() method at the top of the
+        file here.  :|
+
+        :param turn:
+        :param ship:
+        :param game_map:
+        :param me:
+        :return:
+        """
+        potential_cmd = Core.has_transit_been_too_long(turn, ship, game_map, me)
+        if not potential_cmd:
+            myglobals.Misc.loggit('core', 'debug', "  - * it has not, continuing transit")  # is this right?
+            potential_cmd = Core.transit_processing_done_or_not(turn, ship, game_map, me)
+
+        if potential_cmd:
+            myglobals.Misc.loggit('core', 'debug', "  - * it has been ramblin'; new destination: " +
+                                  str(potential_cmd['destination']))

@@ -14,8 +14,8 @@ January.  Good project to keep me busy in winter, and to get my skills up to
 the best level they can be (at least in py3).
 """
 
-# Import the Halite SDK, which will let you interact with the game.
 import hlt
+
 import random
 import logging
 import traceback
@@ -66,57 +66,30 @@ while True:
 
         # is this ship already in transit to mine?
         try:
-            # keep debugging information to track down the line # of issues here
-            #if myglobals.Const.DEBUGGING['core']:
-            #    exc_info = sys.exc_info();
-
-            # everything at this block level has already had mission assigned
+            # everything at this block level has already had mission assigned,
+            # so long as it makes it past this statement w/out going to
+            # 'except'
             if myglobals.Variables.current_assignments[ship.id]['mission'] and myglobals.Const.DEBUGGING['core']:
                 logging.debug(" Determining status of ship " + str(ship.id))
 
             myglobals.Misc.loggit('save_state', 'debug', "  - ship id: " + str(ship.id) + " has state set to " +
                                   myglobals.Variables.current_assignments[ship.id]['mission'])
 
-            # I did things this way because of the potential for adding moar
-            # assignment types, this may be changed for efficiency in the near
-            # future
-            # so what the fsck is it supposed to ACTUALLY DO? - not sure, so
-            # it's just getting commented out for now
-            #elif myglobals.Variables.current_assignments[ship.id]['mission'] != 'mining' \
-            #        and myglobals.Variables.current_assignments[ship.id]['mission'] != 'transit' \
-            #        and myglobals.Variables.current_assignments[ship.id]['mission'] != 'dropoff':
-
-            #    # we should be good to send it on its way
-            #    if myglobals.Const.DEBUGGING['save_state'] or myglobals.Const.DEBUGGING['core']:
-            #        logging.info("  - Ship id: " + str(ship.id) + "  ready for mission.")
-
-            #    # so yeah, now we incorporate the whether or not to mine/dropoff
-            #    # block (now in analytics) with new indent levels
-            #    cmd_n_dest = analytics.Analyze.can_we_embark_and_start_mining(ship, game_map, me)
-            #    command_queue.append(cmd_n_dest['c_queue_addition'])
-
-            #    myglobals.Misc.save_ship_state(ship.id, 'transit', turn, cmd_n_dest['destination'])
-
-            #    if myglobals.Const.DEBUGGING['save_state'] or myglobals.Const.DEBUGGING['core']:
-            #        logging.debug(" - updated former unset state to new transit: " + str(cmd_n_dest['destination']))
-
             if myglobals.Variables.current_assignments[ship.id]['mission'] == 'transit':
                 # have we been a ramblin'?
                 myglobals.Misc.loggit('core', 'debug', "  - checking to see if ship id: " + str(ship.id) +
                                       " has been a ramblin' man...")
-                potential_cmd = primary.Core.has_transit_been_too_long(turn, ship, game_map, me)
-                if not potential_cmd:
-                    myglobals.Misc.loggit('core', 'debug', "  - * it has not, continuing transit")  #is this right?
-                    potential_cmd = primary.Core.transit_processing_done_or_not(turn, ship, game_map, me)
+                c_queue = primary.Core.check_for_too_long_transit(turn, ship, game_map, me)
 
-                if potential_cmd:
-                    myglobals.Misc.loggit('core', 'debug', "  - * it has been ramblin'; new destination: " +
-                                          str(potential_cmd['destination']))
-
-                command_queue.append(potential_cmd)
+                command_queue.append(c_queue)
                 continue
-            elif myglobals.Variables.current_assignments[ship.id]['mission'] == 'get_minimum_distance':
-                command_queue.append(primary.Core.minimum_distance_processing(turn, ship, game_map, me))
+            elif myglobals.Variables.current_assignments[ship.id]['mission'] == 'get_minimum_distance' and \
+                    (turn - myglobals.Variables.current_assignments[ship.id]['turnstamp']) > \
+                    myglobals.Const.Traveling_Too_long:     #NOTE: is this conditional w/'turns' right?
+
+                myglobals.Misc.loggit('core', 'debug', "  - continuing minimum distance transit for ship id: " +
+                                      str(ship.id))
+                command_queue.append(primary.Core.minimum_distance_processing(turn, ship, game_map))
 
             else:   # we must be set for dropoff; check and make sure that we're done nao
                 myglobals.Misc.loggit('core', 'info', "  - in transit to: " +
@@ -129,6 +102,7 @@ while True:
 
         except KeyError as ke:
             logging.debug("In KeyError try/except loop: " + str(ke.__traceback__))
+            logging.debug("Line No: " + str(ke.__traceback__.tb_lineno))
 
             if not ship.is_full:    # if nothing is set, this should ALWAYS be the case
                 # for testing purposes right now we'll just send out mining no matter what;
@@ -150,12 +124,6 @@ while True:
                                       "here, but now we're heading to " + str(target) + " for dropoff after transit")
 
             command_queue.append(ship.move(game_map.naive_navigate(ship, target)))
-
-        #finally:
-            #if myglobals.Const.DEBUGGING['core']:
-            #    myglobals.Misc.loggit('core', 'debug', "   - stack trace: " + traceback.print_exception(*exc_info))
-
-            #del exc_info
 
         # d4m0 schitt ends
 
