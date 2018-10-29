@@ -74,3 +74,39 @@ class StateSave:
                + str(self.destination) + ", turnstamp set: " + str(self.turnstamp) + ", current_mission: " + \
                self.current_mission + ", primary_mission: " + self.primary_mission
 
+    @staticmethod
+    def save_ship_state(id, me, mission, turnstamp, destination, turn):
+        """
+        This will just save the ship's particular state, at least for a
+        certain number of turns, before updating.
+
+        It occurs to me while deciding that this bit of work needs to be
+        handled in its own method that, perhaps, it would be a good idea to
+        create a wrapper class for the individual ships.  I don't know how
+        much of a performance penalty there might be for such, but if it's
+        not too bad, it'd be a lot easier serializing the objects, or
+        portions thereof, if it were laid out this way, and would probably
+        save some confusion when looking at parallel structures for ship
+        related data.
+
+        :param id: ship's id
+        :param me: 'me' from primary core
+        :param mission: currently supported are: mining, transit, and
+                        get_minimum_distance
+        :param turnstamp: turn # when this information was last set
+        :param destination: current operation coordinates or destination
+                            coordinates
+        :param turn: current turn # from primary core processing
+        :return:
+        """
+
+        myglobals.Variables.current_assignments[id] = \
+            { 'mission': mission, 'turnstamp': turnstamp, 'destination': destination, }
+        myglobals.Misc.loggit('core', 'info', "Initialized ship id: " + str(id) + " for mission: " +
+                              mission + " at " + str(destination))
+
+        if mission == 'dropoff' or mission == 'mining' or mission == 'get_minimum_distance':
+            # current_mission will be set to 'transit' for these
+            return { StateSave(id, me.get_ship(id).position, destination, turn, 'transit', mission) }
+        else:
+            return { StateSave(id, me.get_ship(id).position, destination, turn, mission, mission) }

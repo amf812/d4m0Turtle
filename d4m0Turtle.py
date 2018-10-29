@@ -62,23 +62,26 @@ while True:
     myglobals.Misc.loggit('core', 'debug', " -* me.get_ships() dump: " + str(me.get_ships()))
 
     for ship in me.get_ships():
-        # d4m0 schitt starts
-
         # is this ship already in transit to mine?
         try:
-            # everything at this block level has already had mission assigned,
-            # so long as it makes it past this statement w/out going to
-            # 'except'
-            if myglobals.Variables.current_assignments[ship.id]['mission'] and myglobals.Const.DEBUGGING['core']:
+            # we'll bounce to 'except' if this is a new ship
+            if myglobals.Variables.current_assignments[ship.id]['primary_mission'] \
+                    and myglobals.Const.DEBUGGING['core']:
                 logging.debug(" Determining status of ship " + str(ship.id))
 
-            myglobals.Misc.loggit('save_state', 'debug', "  - ship id: " + str(ship.id) + " has state set to " +
-                                  myglobals.Variables.current_assignments[ship.id]['mission'])
+            # everything at this block level has already had mission assigned, so
+            # long as it makes it past the conditional statement w/out going to
+            # 'except'
 
-            if myglobals.Variables.current_assignments[ship.id]['mission'] == 'transit':
+            myglobals.Misc.loggit('save_state', 'debug', "  - ship id: " + str(ship.id) + " has state set to " +
+                                  myglobals.Variables.current_assignments[ship.id]['primary_mission'] + ": " +
+                                  myglobals.Variables.current_assignments[ship.id]['current_mission'])
+
+            if myglobals.Variables.current_assignments[ship.id]['current_mission'] == 'transit':
                 # have we been a ramblin'?
                 myglobals.Misc.loggit('core', 'debug', "  - checking to see if ship id: " + str(ship.id) +
                                       " has been a ramblin' man...")
+                # TODO: continue debugging at this point after new ship code is added in 'except'
                 c_queue = primary.Core.check_for_too_long_transit(turn, ship, game_map, me)
 
                 command_queue.append(c_queue)
@@ -101,6 +104,8 @@ while True:
                                                myglobals.Variables.current_assignments[ship.id]['destination'])
 
         except KeyError as ke:
+            # TODO: implement new ship mission seeking code
+
             logging.debug("In KeyError try/except loop: " + str(ke.__traceback__))
             logging.debug("Line No: " + str(ke.__traceback__.tb_lineno))
 
@@ -118,10 +123,12 @@ while True:
                 #relative_halite = analytics.Analyze.locate_significant_halite(ship, game_map)
                 #target = seek_n_nav.FindApproach.target_halite_simple(ship, game_map, relative_halite)
             else:
-                target = seek_n_nav.FindApproach.locate_nearest_base(ship, game_map, me)
-                myglobals.Misc.save_ship_state(ship.id, 'transit', turn, target)
-                myglobals.Misc.loggit('core', 'debug', " - ship id: " + str(ship.id) + " *not sure how we ended up " +
-                                      "here, but now we're heading to " + str(target) + " for dropoff after transit")
+                # how in the hell did we end up here?
+                raise Exception("Uninitialized StateSave for ship id " + str(ship.id) + " is full?!?")
+                #target = seek_n_nav.FindApproach.locate_nearest_base(ship, game_map, me)
+                #myglobals.Misc.save_ship_state(ship.id, 'transit', turn, target)
+                #myglobals.Misc.loggit('core', 'debug', " - ship id: " + str(ship.id) + " *not sure how we ended up " +
+                #                      "here, but now we're heading to " + str(target) + " for dropoff after transit")
 
             command_queue.append(ship.move(game_map.naive_navigate(ship, target)))
 
