@@ -59,3 +59,18 @@ class StateSave:
         :return: boolean
         """
         return (current_turn - self.turnstamp) > myglobals.Const.Traveling_Too_Long
+
+    def __init__(self, new_id, new_location, new_destination, new_turnstamp,
+                 new_cmission, new_pmission):
+        self.id = new_id
+        self.location = new_location
+        self.destination = new_destination
+        self.turnstamp = new_turnstamp
+        self.current_mission = new_cmission
+        self.primary_mission = new_pmission
+
+    def __str__(self):
+        return "ship ID: " + str(self.id) + ", location: " + str(self.location) + ", destination: " \
+               + str(self.destination) + ", turnstamp set: " + str(self.turnstamp) + ", current_mission: " + \
+               self.current_mission + ", primary_mission: " + self.primary_mission
+

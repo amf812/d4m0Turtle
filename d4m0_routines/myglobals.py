@@ -30,7 +30,8 @@ class Const:
 
 
 class Variables:
-    current_assignments = { }   # ships' states, indexed by 'id'
+    current_assignments = { }   # ships' states, indexed by 'id', each holding
+    # an instance of StateSave
 
 
 class Misc:
