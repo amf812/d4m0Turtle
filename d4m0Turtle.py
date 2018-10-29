@@ -24,7 +24,7 @@ import sys
 from hlt import Position, Direction
 
 # d4m0 imports
-from d4m0_routines import analytics, seek_n_nav, myglobals, primary
+from d4m0_routines import analytics, seek_n_nav, state_save, myglobals, primary
 
 """ <<<Game Begin>>> """
 
@@ -81,20 +81,33 @@ while True:
                 # have we been a ramblin'?
                 myglobals.Misc.loggit('core', 'debug', "  - checking to see if ship id: " + str(ship.id) +
                                       " has been a ramblin' man...")
-                # TODO: continue debugging at this point after new ship code is added in 'except'
-                c_queue = primary.Core.check_for_too_long_transit(turn, ship, game_map, me)
 
-                command_queue.append(c_queue)
-                continue
-            elif myglobals.Variables.current_assignments[ship.id]['mission'] == 'get_minimum_distance' and \
-                    (turn - myglobals.Variables.current_assignments[ship.id]['turnstamp']) > \
-                    myglobals.Const.Traveling_Too_long:     #NOTE: is this conditional w/'turns' right?
-
-                myglobals.Misc.loggit('core', 'debug', "  - continuing minimum distance transit for ship id: " +
-                                      str(ship.id))
-                command_queue.append(primary.Core.minimum_distance_processing(turn, ship, game_map))
+                if primary.Core.check_for_too_long_transit(turn, ship.id):
+                    # set new mission & destination; add try/except-- if exception is found, we need to expand the
+                    # perimeter for searches (as well as exclude already searched spots) and try again
+                    new_dest = seek_n_nav.FindApproach.target_halite_simple(ship, game_map,
+                                                                            analytics.Analyze.
+                                                                            locate_significant_halite(ship, game_map))
+                    myglobals.Variables.current_assignments[ship.id]['destination'] = new_dest
+                    myglobals.Variables.current_assignments[ship.id]['position'] = ship.position
+                    myglobals.Variables.current_assignments[ship.id]['turnstamp'] = turn
+                    myglobals.Variables.current_assignments[ship.id]['current_assignment'] = 'transit'
+                    myglobals.Variables.current_assignments[ship.id]['primary_assignment'] = 'mining'
+                    myglobals.Misc.loggit('core', 'debug', "Resetting due to too long of transit: " +
+                                          str(myglobals.Variables.current_assignments[ship.id]))
+                else:
+                    continue
+            # the following is now redundant
+            # elif myglobals.Variables.current_assignments[ship.id]['primary_mission'] == 'get_minimum_distance' and \
+            #         (turn - myglobals.Variables.current_assignments[ship.id]['turnstamp']) > \
+            #         myglobals.Const.Traveling_Too_Long:     # NOTE: is this conditional w/'turns' right?
+            #
+            #     myglobals.Misc.loggit('core', 'debug', "  - continuing minimum distance transit for ship id: " +
+            #                           str(ship.id))
+            #     command_queue.append(primary.Core.minimum_distance_processing(turn, ship, game_map))
 
             else:   # we must be set for dropoff; check and make sure that we're done nao
+                # TODO: continue debugging at this point
                 myglobals.Misc.loggit('core', 'info', "  - in transit to: " +
                                       str(myglobals.Variables.current_assignments[ship.id]['destination']))
                 command_queue.append(ship.move(game_map.naive_navigate(ship,
@@ -104,7 +117,7 @@ while True:
                                                myglobals.Variables.current_assignments[ship.id]['destination'])
 
         except KeyError as ke:
-            # TODO: implement new ship mission seeking code
+            # TODO: verify new ship mission seeking code
 
             logging.debug("In KeyError try/except loop: " + str(ke.__traceback__))
             logging.debug("Line No: " + str(ke.__traceback__.tb_lineno))
@@ -117,11 +130,10 @@ while True:
                 for cntr in range(0, myglobals.Const.Maximal_Consideration_Distance):
                     target = target.directional_offset(rdir)
 
-                myglobals.Misc.save_ship_state(ship.id, 'get_minimum_distance', turn, target)
+                myglobals.Variables.current_assignments[ship.id] = \
+                    state_save.StateSave.get_save_ship_state(ship.id, me, 'get_minimum_distance', turn, target, turn)
                 myglobals.Misc.loggit('core', 'debug', " - ship id: " + str(ship.id) + " getting minimum distance at :"
                                       + str(target))
-                #relative_halite = analytics.Analyze.locate_significant_halite(ship, game_map)
-                #target = seek_n_nav.FindApproach.target_halite_simple(ship, game_map, relative_halite)
             else:
                 # how in the hell did we end up here?
                 raise Exception("Uninitialized StateSave for ship id " + str(ship.id) + " is full?!?")

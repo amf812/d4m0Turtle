@@ -75,7 +75,7 @@ class StateSave:
                self.current_mission + ", primary_mission: " + self.primary_mission
 
     @staticmethod
-    def save_ship_state(id, me, mission, turnstamp, destination, turn):
+    def get_save_ship_state(id, me, mission, turnstamp, destination, turn):
         """
         This will just save the ship's particular state, at least for a
         certain number of turns, before updating.

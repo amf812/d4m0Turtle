@@ -130,28 +130,30 @@ class Core:
 
         return c_queue
 
-    # @staticmethod
-    # def check_for_too_long_initial_transit(turn, ship, game_map, me):
-    #     """
-    #     check whether or not the ship has been in transit for too long; I've
-    #     got to say that I'm pretty sure that this method is a 3rd duplication
-    #     of the initial has_transit_been_too_long() method at the top of the
-    #     file here.  :|
-    #
-    #     :param turn:
-    #     :param ship:
-    #     :param game_map:
-    #     :param me:
-    #     :return:
-    #     """
-    #     potential_cmd = Core.has_transit_been_too_long(turn, ship, game_map, me)
-    #     if not potential_cmd:
-    #         myglobals.Misc.loggit('core', 'debug', "  - * it has not, continuing transit")  # is this right?
-    #         potential_cmd = Core.transit_processing_done_or_not(turn, ship, game_map, me)
-    #
-    #     if potential_cmd:
-    #         myglobals.Misc.loggit('core', 'debug', "  - * it has been ramblin'; new destination: " +
-    #                               str(potential_cmd['destination']))
+    @staticmethod
+    def check_for_too_long_transit(turn, id):
+        """
+        check whether or not the ship has been in transit for too long; I've
+        got to say that I'm pretty sure that this method is a 3rd duplication
+        of the initial has_transit_been_too_long() method at the top of the
+        file here.  :|
+
+        :param turn:
+        :param id: current ship's id
+        :param game_map:
+        :param me:
+        :return: true if in transit too long, else false
+        """
+        # potential_cmd = Core.has_transit_been_too_long(turn, ship, game_map, me)
+        # if not potential_cmd:
+        #     myglobals.Misc.loggit('core', 'debug', "  - * it has not, continuing transit")  # is this right?
+        #     potential_cmd = Core.transit_processing_done_or_not(turn, ship, game_map, me)
+        #
+        # if potential_cmd:
+        #     myglobals.Misc.loggit('core', 'debug', "  - * it has been ramblin'; new destination: " +
+        #                           str(potential_cmd['destination']))
+
+        return (turn - myglobals.Variables.current_assignments[id]['turnstamp']) > myglobals.Const.Traveling_Too_Long
 
     @staticmethod
     def prune_state_save(me):

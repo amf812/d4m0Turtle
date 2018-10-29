@@ -43,6 +43,8 @@ class FindApproach:
         the highest quantity it can get, but dropping to the next ranked
         spot on the list, if there is already a turtle present.
 
+        TODO: verify algorithm, ie why isn't current_turtle's 'id' or 'position' utilized?
+
         :param current_turtle:
         :param current_map:
         :param halite:
@@ -53,5 +55,6 @@ class FindApproach:
             if current_map[loc_data['position']].is_occupied:
                 continue
             else:
-                return loc_data['position']     #find a way to raise exception
-                                                #if nothing is found
+                return loc_data['position']
+
+        raise Exception("No unoccupied spots found for mining halite")
